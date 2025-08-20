@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 
-from cv2 import (imread, imwrite, cvtColor, COLOR_BGR2HLS, COLOR_BGR2HSV, COLOR_BGR2YUV, COLOR_BGR2GRAY,
-                 medianBlur, getGaussianKernel, GaussianBlur, bilateralFilter,
-                 BORDER_CONSTANT, morphologyEx, MORPH_ELLIPSE, MORPH_GRADIENT, getStructuringElement, BORDER_DEFAULT, Sobel, CV_16S, convertScaleAbs, addWeighted, COLOR_BGR2GRAY, Laplacian, blur, Canny, COLOR_BGR2LAB)
+from cv2 import (imread, imwrite, cvtColor, COLOR_BGR2HLS, COLOR_BGR2HSV,
+                 COLOR_BGR2YUV, medianBlur, getGaussianKernel, GaussianBlur,
+                 bilateralFilter, BORDER_CONSTANT, morphologyEx,
+                 MORPH_GRADIENT, BORDER_DEFAULT, Sobel, CV_16S,
+                 convertScaleAbs, addWeighted, Laplacian, blur, Canny,
+                 COLOR_BGR2LAB, COLOR_BGR2GRAY)
 from numpy import exp, ones, uint8
 from os import path
 
@@ -34,6 +37,7 @@ def get_lab(src: str, dst: str) -> None:
     img_color_lab = cvtColor(img, COLOR_BGR2LAB)
     imwrite(f"{dst}/{subdir}/{filename}_lab.JPG", img_color_lab)
 
+
 def get_yuv(src: str, dst: str) -> None:
     subdir = "Transformed"
     # hue lightness saturation
@@ -42,6 +46,7 @@ def get_yuv(src: str, dst: str) -> None:
     img_color_yuv = cvtColor(img, COLOR_BGR2YUV)
     imwrite(f"{dst}/{subdir}/{filename}_yuv.JPG", img_color_yuv)
 
+
 def get_gray(src: str, dst: str) -> None:
     subdir = "Transformed"
     # hue lightness saturation
@@ -49,6 +54,7 @@ def get_gray(src: str, dst: str) -> None:
     img = imread(src)
     img_color_gray = cvtColor(img, COLOR_BGR2GRAY)
     imwrite(f"{dst}/{subdir}/{filename}_gray.JPG", img_color_gray)
+
 
 def get_hsv(src: str, dst: str) -> None:
     # hue saturation value
@@ -203,16 +209,18 @@ def get_median_blurring_large_noise(src: str, dst: str) -> None:
     imwrite(f"{dst}/{subdir}/{filename}_median_blur_large_noise.JPG",
             img_median_blur_large)
 
+
 def get_morphological_gradient(src: str, dst: str) -> None:
     subdir = "Transformed"
     filename = path.splitext(path.basename(src))[0]
     img = imread(src)
-    
+
     kernel = ones((3, 3), uint8)
     img_morphological_gradient = morphologyEx(img, MORPH_GRADIENT, kernel)
-        
+
     imwrite(f"{dst}/{subdir}/{filename}_morphological_gradient.JPG",
             img_morphological_gradient)
+
 
 def get_sobel(src: str, dst: str) -> None:
     subdir = "Transformed"
@@ -224,19 +232,20 @@ def get_sobel(src: str, dst: str) -> None:
 
     gray = cvtColor(img, COLOR_BGR2GRAY)
 
-    grad_x = Sobel(gray, ddepth, 1, 0, ksize=3, scale=scale, delta=delta, borderType=BORDER_DEFAULT)
+    grad_x = Sobel(gray, ddepth, 1, 0, ksize=3,
+                   scale=scale, delta=delta, borderType=BORDER_DEFAULT)
     # Gradient-Y
     # grad_y = Scharr(gray,ddepth,0,1)
-    grad_y = Sobel(gray, ddepth, 0, 1, ksize=3, scale=scale, delta=delta, borderType=BORDER_DEFAULT)
-    
-    
+    grad_y = Sobel(gray, ddepth, 0, 1, ksize=3, scale=scale,
+                   delta=delta, borderType=BORDER_DEFAULT)
+
     abs_grad_x = convertScaleAbs(grad_x)
     abs_grad_y = convertScaleAbs(grad_y)
-    
-    
+
     img_sobel = addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0)
     imwrite(f"{dst}/{subdir}/{filename}_sobel.JPG",
             img_sobel)
+
 
 def get_laplacian_operator(src: str, dst: str) -> None:
     subdir = "Transformed"
@@ -256,6 +265,7 @@ def get_laplacian_operator(src: str, dst: str) -> None:
     imwrite(f"{dst}/{subdir}/{filename}_laplacian_operator.JPG",
             img_laplacian_operator_8u)
 
+
 def get_canny_edge(src: str, dst: str) -> None:
     subdir = "Transformed"
     filename = path.splitext(path.basename(src))[0]
@@ -265,9 +275,10 @@ def get_canny_edge(src: str, dst: str) -> None:
     ratio = 3
     kernel_size = 3
 
-    img_blur = blur(img, (3,3))
-    detected_edges = Canny(img_blur, low_threshold, low_threshold*ratio, kernel_size)
+    img_blur = blur(img, (3, 3))
+    detected_edges = Canny(img_blur, low_threshold, low_threshold*ratio,
+                           kernel_size)
     mask = detected_edges != 0
-    img_canny_edge = img * (mask[:,:,None].astype(img.dtype))
+    img_canny_edge = img * (mask[:, :, None].astype(img.dtype))
     imwrite(f"{dst}/{subdir}/{filename}_canny_edge.JPG",
             img_canny_edge)

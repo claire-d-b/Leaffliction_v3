@@ -1,22 +1,19 @@
 #!/usr/bin/env python3
 
-from cv2 import imread, waitKey, destroyAllWindows, imwrite, resize, INTER_AREA, INTER_CUBIC, getRotationMatrix2D, warpAffine, convertScaleAbs, cvtColor, COLOR_BGR2HLS, COLOR_BGR2HSV, COLOR_BGR2RGB, medianBlur, getGaussianKernel, GaussianBlur, bilateralFilter, BORDER_CONSTANT, flip, COLOR_BGR2RGB, calcHist, COLOR_BGR2HLS, COLOR_BGR2HSV, split, COLOR_BGR2LAB
-from matplotlib.pyplot import legend, imshow, axis, show, close, plot, title, xlabel, ylabel, savefig, ylim, figure, subplots
 from sys import argv
-from pathlib import Path
-from numpy import float32, exp, ndarray
 from glob import glob
 from os import path
-from pathlib import Path
-from Augmentation_types import get_contrast, get_scale_shrink, get_scale_zoom, get_horizontal_flip, get_rotate, get_perspective_transformation, get_affine_transformation
+from Augmentation_types import (get_contrast, get_scale_zoom,
+                                get_horizontal_flip, get_rotate,
+                                get_perspective_transformation,
+                                get_affine_transformation)
 from Transformation import process_file
-from Histogram import calc_hist, get_additional_values, plot_multiple_images_histogram
 from stats import get_len
 
 
 def process_input_augmentation(src=None, dst=None, option=None) -> None:
-    augmentations = "contrast", "scale_zoom", "horizontal_flip", "rotation", "affine_transformation", "perspective_transformation"
-    true_subdir = "Augmented"
+    augmentations = "contrast", "scale_zoom", "horizontal_flip", "rotation", \
+                    "affine_transformation", "perspective_transformation"
 
     if src and not src.endswith('/'):
         src = src + '/'
@@ -30,23 +27,24 @@ def process_input_augmentation(src=None, dst=None, option=None) -> None:
     if src and path.isfile(src):
         ndst = f"{path.normpath(path.dirname(src))}/Histogram_subcategory/"
 
-        img = process_file(src, dst=ndst, category="Transformed", augmented=True)
+        img = process_file(src, dst=ndst, category="Transformed",
+                           augmented=True)
         if option:
             for i, ttype in enumerate(augmentations):
                 match option:
                     case 0:
                         return get_contrast(src, dst)
                     case 1:
-                        return get_scale_shrink(src, dst)
-                    case 2:
                         return get_scale_zoom(src, dst)
-                    case 3:
-                        return get_scale_zoom_crop(src, dst)
-                    case 4:
+                    case 2:
                         return get_horizontal_flip(src, dst)
-                    case 5:
+                    case 3:
                         return get_rotate(src, dst)
-                    case _: 
+                    case 4:
+                        return get_affine_transformation(src, dst)
+                    case 5:
+                        return get_perspective_transformation(src, dst)
+                    case _:
                         return None
 
         else:
@@ -61,7 +59,7 @@ def process_input_augmentation(src=None, dst=None, option=None) -> None:
         folder = src
         # Try to find multiple files using glob pattern
         # Pattern for images starting with prefix
-        pattern = f"{folder}Transformed/*.JPG"  # You can use *.png or *.* to match more
+        pattern = f"{folder}Transformed/*.JPG"
         img = glob(pattern)
 
         ndst = f"{folder}Histogram_subcategory/"
@@ -69,7 +67,8 @@ def process_input_augmentation(src=None, dst=None, option=None) -> None:
             print(f"Found {get_len(img)} files matching pattern: {pattern}")
             # plot_multiple_images_histogram(img, src, ndst)
             for i, image in enumerate(img):
-                process_file(image, dst=dst, category="Transformed", augmented=True)
+                process_file(image, dst=dst, category="Transformed",
+                             augmented=True)
 
                 if option:
                     for i, ttype in enumerate(augmentations):
@@ -77,16 +76,17 @@ def process_input_augmentation(src=None, dst=None, option=None) -> None:
                             case 0:
                                 return get_contrast(image, dst)
                             case 1:
-                                return get_scale_shrink(image, dst)
-                            case 2:
                                 return get_scale_zoom(image, dst)
-                            case 3:
-                                return get_scale_zoom_crop(image, dst)
-                            case 4:
+                            case 2:
                                 return get_horizontal_flip(image, dst)
-                            case 5:
+                            case 3:
                                 return get_rotate(image, dst)
-                            case _: 
+                            case 4:
+                                return get_affine_transformation(image, dst)
+                            case 5:
+                                return get_perspective_transformation(image,
+                                                                      dst)
+                            case _:
                                 return None
                 else:
                     get_contrast(image, dst)
@@ -98,14 +98,32 @@ def process_input_augmentation(src=None, dst=None, option=None) -> None:
         else:
             print(f"No files found matching pattern: {src}")
 
+
 if __name__ == "__main__":
     try:
         match get_len(argv):
             case 1:
-                raise AssertionError("Error: Please provide at least one argument.")
+                raise AssertionError("Error: Please provide at least one \
+                                      argument.")
             case 2 | 3:
                 if get_len(argv) == 2 and argv[1] == "-h":
-                    print(f"usage: Augmentation.py [-h] [-src] [-dst] [options]\noptional arguments:\n -h, --help  show this help message and exit\n -src <Input directory>\n -dst <Destination directory if multiple files>\n -options Type of Augmentation\n    <hls> Convert image to hue-lightness-saturation\n    <hsv> Convert image to hue-saturation-value\n    <gaussian-blur> It softens the edges and reduces high-frequency noise in the image by averaging pixel values\n    <median-blur-small> Removes 'salt and pepper' small noise\n    <median-blur-large> Removes 'salt and pepper' large noise\n    <bilateral-filter> Removes noise and preserves edges")
+                    print("usage: Augmentation.py [-h] [-src] \
+                           [-dst] [options]\noptional arguments:\n\
+                           -h, --help  show this help message and \
+                           exit\n -src <Input directory>\n -dst \
+                           <Destination directory if multiple files>\n\
+                           -options Type of Augmentation\n\
+                           <hls> Convert image to hue-lightness-saturation\n\
+                           <hsv> Convert image to hue-saturation-value\n\
+                                <gaussian-blur> It softens the edges and \
+                            reduces high-frequency noise in the image \
+                            by averaging pixel values\n\
+                                <median-blur-small> Removes 'salt and \
+                            pepper' small noise\n\
+                                <median-blur-large> \
+                            Removes 'salt and pepper' large noise\n\
+                                <bilateral-filter> Removes noise and \
+                            preserves edges")
                 elif get_len(argv) == 2:
                     process_input_augmentation(src=argv[1])
                 else:
@@ -115,10 +133,13 @@ if __name__ == "__main__":
                 if argv[1] == '-src' and argv[3] == '-dst':
                     process_input_augmentation(src=argv[2], dst=argv[4])
                 else:
-                    raise AssertionError("Error: Unknown commmand: see Augmentation.py -h (help).")
+                    raise AssertionError("Error: Unknown commmand: see \
+                                          Augmentation.py -h (help).")
             case 7:
-                if argv[1] == '-src' and argv[3] == '-dst' and argv[5] == '-options':
-                    process_input_augmentation(src=argv[2], dst=argv[4], option=argv[6])
+                if argv[1] == '-src' and argv[3] == '-dst' and argv[5] == \
+                   '-options':
+                    process_input_augmentation(src=argv[2], dst=argv[4],
+                                               option=argv[6])
             case _:
                 raise AssertionError("Error: Too many arguments.")
 

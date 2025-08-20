@@ -8,12 +8,11 @@ from pathlib import Path
 from numpy import ndarray
 from os import path
 from pandas import DataFrame, concat, read_csv
-from utils import normalize_df, load
+from utils import load
 from stats import (get_len, get_min, get_max, get_standard_deviation,
                    get_quartile, get_median, get_mean)
 from sys import argv
 import glob
-import csv
 
 
 # Helper to calculate histogram
@@ -41,7 +40,8 @@ def calculate_histogram_stats(values):
     get_quartile(values)[1], get_max(values)
 
 
-def plot_multiple_images_histogram(image_files, src, dst, ndst, category, augmented):
+def plot_multiple_images_histogram(image_files, src, dst, ndst, category,
+                                   augmented):
     """Plot averaged histograms for multiple images"""
     fig, axs = subplots()
 
@@ -134,19 +134,25 @@ def plot_multiple_images_histogram(image_files, src, dst, ndst, category, augmen
         nsrc = path.basename(src)
         dst = f"{dst}{category}/"
 
-        modifications = ("lab", "hsv", "morphological_gradient", \
-                          "bilateral_filter", "median_blur_small_noise", \
-                          "canny_edge") if augmented == False \
-                          else ("contrast", "scale_zoom", "horizontal_flip", "rotation", "affine_transformation", "perspective_transformation")
+        modifications = ("lab", "hsv", "morphological_gradient",
+                         "bilateral_filter", "median_blur_small_noise",
+                         "canny_edge") if not augmented else \
+                        ("contrast", "scale_zoom",
+                         "horizontal_flip", "rotation",
+                         "affine_transformation",
+                         "perspective_transformation")
 
         for m in modifications:
             dstname = f"{dst}{path.splitext(path.basename(nsrc))[0]}_{m}"
             dictionary = dict({
-                            "Subname": f"{Path(dstname).name.split('_')[0]}_{Path(dstname).parts[1]}",
-                            "Name": f"{Path(dstname).name.split('_')[0]}_{Path(dstname).parts[1]}_{'_'.join(Path(dstname).name.split('_')[1:])}",
+                            "Subname": f"{Path(dstname).name.split('_')[0]}_\
+{Path(dstname).parts[1]}",
+                            "Name": f"{Path(dstname).name.split('_')[0]}_\
+{Path(dstname).parts[1]}_{'_'.join(Path(dstname).name.split('_')[1:])}",
                             "Category": f"{Path(dstname).parts[1]}",
-                            "Modification": f"{'_'.join(Path(dstname).
-                                                 name.split('_')[1:])}",
+                            "Modification": f"{'_'.join(Path(dstname)
+                                                        .name.split('_')
+                                                        [1:])}",
                             "Red": r_hist_avg.flatten(),
                             "Green": g_hist_avg.flatten(),
                             "Blue": b_hist_avg.flatten(),
@@ -161,26 +167,24 @@ def plot_multiple_images_histogram(image_files, src, dst, ndst, category, augmen
 
             ndst = Path(dst).parent
 
-            if path.exists(f'{dst}{Path(dstname).parts[1]}_{category}_features.csv'):
-                ndf.to_csv(f'{dst}{Path(dstname).parts[1]}_{category}_features.csv',
-                            mode='a', header=False)
+            if path.exists(f'{dst}{Path(dstname).parts[1]}_\
+{category}_features.csv'):
+                ndf.to_csv(f'{dst}{Path(dstname).parts[1]}_\
+{category}_features.csv', mode='a', header=False)
             else:
-                ndf.to_csv(f'{dst}{Path(dstname).parts[1]}_{category}_features.csv',
-                            mode='w', index=True)
-            # if path.exists(f'{Path(dstname).parts[1]}_{category}_features.csv'):
-            #     ndf.to_csv(f'{Path(dstname).parts[1]}_{category}_features.csv',
-            #                mode='a', header=False)
-            # else:
-            #     ndf.to_csv(f'{Path(dstname).parts[1]}_{category}_features.csv',
-            #                mode='w', index=True)
-            newdf = load(f"{dst}{Path(dstname).parts[1]}_{category}_features.csv")
-            nndf = newdf.groupby(['Subname', 'Name', 'Category',
-                                    'Modification']).median(numeric_only=True)
-            # nndf = normalize_df(nndf)
-            nndf.to_csv(f"{dst}{Path(dstname).parts[1]}_{category}_features_test.csv",
-                            mode='w')
+                ndf.to_csv(f'{dst}{Path(dstname).parts[1]}_\
+{category}_features.csv', mode='w', index=True)
 
-        pattern = f"**/*{argv[1].rsplit('/', 1)[1]}_Transformed_features_test.csv"
+            newdf = load(f"{dst}{Path(dstname).parts[1]}_\
+{category}_features.csv")
+            nndf = newdf.groupby(['Subname', 'Name', 'Category',
+                                  'Modification']).median(numeric_only=True)
+            # nndf = normalize_df(nndf)
+            nndf.to_csv(f"{dst}{Path(dstname).parts[1]}_{category}_\
+features_test.csv", mode='w')
+
+        pattern = f"**/*{argv[1].rsplit('/', 1)[1]}_Transformed_\
+features_test.csv"
         csv_files = glob.glob(pattern, recursive=True)
         # print(files)
         # print("arg")
@@ -207,22 +211,26 @@ def plot_multiple_images_histogram(image_files, src, dst, ndst, category, augmen
         # print("DFS")
         # print(dfs)
         combined_df = concat(dfs, ignore_index=True)
-        original_df = read_csv(csv_files[0])  # Get column structure
+        # original_df = read_csv(csv_files[0])  # Get column structure
         # from first file
         # Get 2nd column name:
-        second_column_name = original_df.columns[1]
+        # second_column_name = original_df.columns[1]
         test_df = combined_df.copy()
         # test_df = normalize_df(test_df)
         file = Path(f"{Path(dstname).parts[1]}")
 
         if file.exists():
-            test_df.to_csv(f"features_{Path(dstname).parts[1]}.csv", mode="a", header=False)
+            test_df.to_csv(f"features_{Path(dstname).parts[1]}\
+.csv", mode="a", header=False)
             # test_df['Category'] = None
-            test_df.to_csv(f"features_{Path(dstname).parts[1]}_test.csv", mode="a", header=False, index=False)
+            test_df.to_csv(f"features_{Path(dstname).parts[1]}_test\
+.csv", mode="a", header=False, index=False)
         else:
-            test_df.to_csv(f"features_{Path(dstname).parts[1]}.csv", mode="w", header=True)
+            test_df.to_csv(f"features_{Path(dstname).parts[1]}\
+.csv", mode="w", header=True)
             # test_df['Category'] = None
-            test_df.to_csv(f"features_{Path(dstname).parts[1]}.csv", mode="w", header=True, index=False)
+            test_df.to_csv(f"features_{Path(dstname).parts[1]}\
+.csv", mode="w", header=True, index=False)
         # Insert empty 2nd column back into the combined dataframe
         # Insert at position 1 with None values
         # combined_df.insert(1, second_column_name, None)

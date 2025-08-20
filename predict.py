@@ -5,7 +5,7 @@ from utils import load, normalize_df, open_thetas_file, get_max
 from utils import get_dot
 from matplotlib.pyplot import savefig, clf, close, figure, axhline, scatter
 from matplotlib.pyplot import legend, gca
-from pandas import concat, DataFrame, read_csv
+from pandas import concat
 from seaborn import pairplot
 from math import e
 import ast
@@ -18,7 +18,8 @@ def predict():
     df = origin_df.fillna(0)
 
     categories = sorted(list(set(norigin_df['Category'])))
-    ncolors = ['red', 'blue', 'green', 'gray', 'pink', 'purple', 'cyan', 'lightgreen']
+    ncolors = ['red', 'blue', 'green', 'gray', 'pink', 'purple',
+               'cyan', 'lightgreen']
     n = len(categories)
 
     # Get 3 random values without replacement
@@ -66,8 +67,9 @@ def predict():
             z = get_dot(col, w[j]) + bias[j]
 
             predictions[i].insert(j, 1 / (1 + (e ** -z)))
-            scatter(z, 1 / (1 + (e ** -z)), color=random_colors[j%len(random_colors)], marker='o',
-                    label=categories[j])
+            scatter(z, 1 / (1 + (e ** -z)),
+                    color=random_colors[j % len(random_colors)],
+                    marker='o', label=categories[j])
 
     # récupère tous les labels.
     handles, labels = gca().get_legend_handles_labels()
@@ -92,7 +94,7 @@ def predict():
 
     # Remove only 2nd column values but keep column name
     # First, get the original column structure with 2nd column
-    col_df = norigin_df  # Get column structure
+
     # from first file
     # Get 2nd column name:
     # third_column_name = col_df.columns[2]
@@ -102,13 +104,14 @@ def predict():
     # df.insert(3, third_column_name, None)
 
     df['Category'] = [categories[p.index(get_max(p))] for p
-                    in predictions]
+                      in predictions]
     ndf = df
     # df = df.sort_values(by=['Name', 'Category', 'Modification'])
     # print(set(df['Category']))
     ncategories = categories
 
-    ncolors = ['red', 'blue', 'green', 'gray', 'pink', 'purple', 'cyan', 'lightgreen']
+    ncolors = ['red', 'blue', 'green', 'gray', 'pink',
+               'purple', 'cyan', 'lightgreen']
     n = len(ncategories)
 
     # Get 3 random values without replacement
@@ -129,8 +132,7 @@ def predict():
     res_df = res_df.sort_values(by='Subname')
     # res_df.groupby('Subname').median(numeric_only=True)
 
-    res_df.to_csv("categories.csv", header=True,
-                                    index=False)
+    res_df.to_csv("categories.csv", header=True, index=False)
     ftruth = load("dataset_test_truth.csv")
 
     # ffirst_col = ftruth.iloc[:, [0]]
@@ -142,8 +144,7 @@ def predict():
 
     # ftruth.sort_values(by='Category', ascending=False)
     # ftruth = ftruth.sort_values(by=['Name', 'Category', 'Modification'])
-    fdf.to_csv("categories_truth.csv", header=True,
-                                        index=False)
+    fdf.to_csv("categories_truth.csv", header=True, index=False)
     # df = df.sort_values(by='Category')
     for i in range(len(ncategories)):
         filtered_df = df[df['Category'] == ncategories[i]]
@@ -155,10 +156,9 @@ who would probably belong to {ncategories[i]}")
     # ncategories = [i for i, x in enumerate(ncategories)]
 
     pairplot(ndf, hue="Category", palette=[random_colors
-                                        [i%len(random_colors)] for
-                                        i in range(len(
-                                        ncategories))],
-            markers=random_markers)
+                                           [i % len(random_colors)] for
+                                           i in range(len(ncategories))],
+             markers=random_markers)
 
     savefig("output_class_II")
     clf()

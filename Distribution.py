@@ -1,12 +1,9 @@
 #!/usr/bin/env python3
 
-from matplotlib.pyplot import savefig, clf, close, figure, axhline, scatter
-from matplotlib.pyplot import legend, gca, plot, ylabel, title, show, pie, cm, subplots, bar
+from matplotlib.pyplot import savefig, close, subplots
 import matplotlib.colors as mcolors
-from pandas import concat, DataFrame, read_csv, Series
-from numpy import linspace
+from pandas import DataFrame, read_csv
 from sys import argv
-from pathlib import Path
 from stats import get_len
 
 
@@ -21,6 +18,7 @@ def load_ret_dataframe(path: str) -> DataFrame:
     except Exception as e:
         raise AssertionError(f"Error: {e}")
     return file
+
 
 def create_charts_from_dataframe(file: DataFrame, path: str) -> None:
     """Functions that makes various charts representing pictures'
@@ -42,7 +40,8 @@ def create_charts_from_dataframe(file: DataFrame, path: str) -> None:
             close(fig)
 
             fig, ax = subplots()
-            ax.bar(labels, count.astype(float), label=labels, color=mcolors.TABLEAU_COLORS.values())
+            ax.bar(labels, count.astype(float), label=labels,
+                   color=mcolors.TABLEAU_COLORS.values())
             ax.set_ylim(bottom=0)
             savefig(f"{set(group['Category'].values).pop()}/Distribution Bar")
             ax.clear()
@@ -52,7 +51,6 @@ def create_charts_from_dataframe(file: DataFrame, path: str) -> None:
             exists = 1
     if exists == 0:
         raise AssertionError("Error: Category not found.")
-
 
 
 if __name__ == "__main__":

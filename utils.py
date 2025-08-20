@@ -13,6 +13,7 @@ def get_housename(case_value, categories) -> str | None:
         case _:
             return None
 
+
 def load(path: str) -> DataFrame:
     """Function that opens a file and display inner data in the shape
     of a datatable"""
