@@ -4,6 +4,7 @@ from sys import argv
 from numpy import ndarray
 from glob import glob
 from os import path
+from pathlib import Path
 from Transformation_types import (get_hls, get_hsv, get_gaussian_blur,
                                   get_bilateral_filter,
                                   get_median_blurring_large_noise,
@@ -18,22 +19,37 @@ from stats import get_len
 def process_file(src: str, dst: str, category: str, augmented: bool) \
                  -> ndarray | None:
 
-    pattern = f"{dst}{category}/*"  # You can use *.png or *.* to match more
-    img = glob(pattern)
+    pattern = f"{dst}*"  # You can use *.png or *.* to match more
+    # img = glob(pattern)
+    # print("image")
+    # print(img)
+    print("pattern")
+    print(pattern)
     true_subdir = "Histograms"
 
     ndst = f"{path.normpath(dst)}/{true_subdir}/"
 
-    if dst is None:
-        files = glob(f"{pattern}Base/*.JPG")
-        return img
+    if not augmented:
+        files = glob(f"{Path(pattern).parent}/Base/*.JPG")
+        print("files")
+        print(files)
+        print(f"{Path(pattern).parent}/Base/*.JPG")
+        plot_multiple_images_histogram(files, src, dst,
+                                       ndst, category,
+                                       augmented)
+        return files
     else:
-        files = glob(f"{dst}{category}/*")
+        files = glob(f"{Path(pattern).parent}/{category}/*.JPG")
+        # print("haha")
+        # print(f"{dst}{category}/*.JPG")
+        print("files")
+        print(files)
+        print(f"{Path(pattern).parent}/{category}/*.JPG")
         plot_multiple_images_histogram(files, src, dst,
                                        ndst, category,
                                        augmented)
 
-        return img
+        return files
 
 
 def process_input_augmentation(src=None, dst=None, option=None) -> None:

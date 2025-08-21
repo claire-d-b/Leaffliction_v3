@@ -10,7 +10,7 @@ rm output_scurve.png;
 rm thetas_old.csv;
 rm thetas.csv;
 
-make re
+make re;
 echo "processing train pictures' transformations...";
 ./Transformation.py Train/Train_Apple_Black_rot &
 ./Transformation.py Train/Train_Apple_healthy &
