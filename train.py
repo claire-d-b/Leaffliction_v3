@@ -6,8 +6,6 @@ from linear_regression import minimize_cost
 from matplotlib.pyplot import savefig, clf, close
 from pandas import concat, read_csv
 from seaborn import pairplot
-import random
-from pathlib import Path
 from sys import argv
 import random
 import glob
@@ -64,13 +62,6 @@ def train():
 
         combined_df = concat(dfs, ignore_index=True)
 
-        # combined_df.to_csv("features.csv", index=False)
-        # print("combiné")
-        # print(combined_df)
-        # combined_df = combined_df.groupby(["Subname", "Category"]).median(numeric_only=True)
-        # print("combd")
-        # print(combined_df)
-        # combined_df = combined_df.reset_index()
         combined_df.to_csv("features.csv")
 
         # combined_df = concat([combined_df.iloc[:, :3],
@@ -84,7 +75,6 @@ def train():
         # third_column_name = original_df.columns[2]
         # combined_df = combined_df.reset_index()
         combined_df['Category'] = None
-        # ***** combined_df = combined_df.groupby("Subname").median(numeric_only=True) *****
 
         # Insert empty 2nd column back into the combined dataframe
         # Insert at position 1 with None values
@@ -95,7 +85,8 @@ def train():
 
         categories = sorted(list(set(origin_df['Category'])))
 
-        ncolors = ['red', 'blue', 'green', 'gray', 'pink', 'purple', 'cyan', 'lightgreen']
+        ncolors = ['red', 'blue', 'green', 'gray', 'pink',
+                   'purple', 'cyan', 'lightgreen']
         n = len(categories)
 
         # Get 3 random values without replacement
@@ -140,14 +131,14 @@ def train():
             b.insert(i, [])
 
             overall_values = [float(item) for sublist in df[df
-                            ['Category'] == categories[i]].iloc[:, 1:].values
-                            for item in sublist]
+                              ['Category'] == categories[i]].iloc[:, 1:].values
+                              for item in sublist]
 
             for j, item in enumerate(overall_values):
 
                 weight, bias, mse = minimize_cost(len(overall_values),
-                                                theta_0, theta_1,
-                                                item, 1, 0.0001)
+                                                  theta_0, theta_1,
+                                                  item, 1, 0.0001)
                 w[i].insert(j, weight)
                 b[i].insert(j, bias)
 
@@ -166,8 +157,8 @@ def train():
         pairplot(ppdf, hue='Category', palette=[random_colors
                                                 [i]
                                                 for i in range(len
-                                                (categories))],
-                markers=random_markers)
+                                                               (categories))],
+                 markers=random_markers)
 
         savefig("output_class_I")
         # Clear the figure content

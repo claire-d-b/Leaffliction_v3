@@ -10,7 +10,6 @@ from seaborn import pairplot
 from math import e
 import ast
 import random
-from numpy import dot
 
 
 def predict():
@@ -59,14 +58,14 @@ def predict():
     # df = df.groupby('Subname').median(numeric_only=True)
     # print("dataframe")
     # print(df)
-    # print(df.iloc[:, 4:])
+    print(df.iloc[:, 4:])
 
     for i, col in enumerate(df.iloc[:, 4:].values):
         predictions.insert(i, [])
         # print("col", col)
 
         for j in range(len(categories)):
-            z = dot(col, w[j]) + bias[j]
+            z = get_dot(col, w[j]) + bias[j]
 
             predictions[i].insert(j, 1 / (1 + (e ** -z)))
             scatter(z, 1 / (1 + (e ** -z)),

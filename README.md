@@ -1,6 +1,6 @@
 - To launch the project
 
-make re
+make Apple / make Grape
 
 - To create Augmented or Transformed images
 
@@ -19,7 +19,3 @@ make re
 - To compare predicitions vs real classes
 
 ./compare
-
-- To predict Apple data based on 50 (x6 transformations x6 augmentations = 1800) training examples per class and 25 validation examples per class
-
-make Apple
