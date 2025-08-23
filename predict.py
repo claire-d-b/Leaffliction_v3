@@ -10,6 +10,7 @@ from seaborn import pairplot
 from math import e
 import ast
 import random
+from numpy import dot
 
 
 def predict():
@@ -58,13 +59,14 @@ def predict():
     # df = df.groupby('Subname').median(numeric_only=True)
     # print("dataframe")
     # print(df)
+    # print(df.iloc[:, 4:])
 
-    for i, col in enumerate(df.iloc[:, 2:].values):
+    for i, col in enumerate(df.iloc[:, 4:].values):
         predictions.insert(i, [])
         # print("col", col)
 
         for j in range(len(categories)):
-            z = get_dot(col, w[j]) + bias[j]
+            z = dot(col, w[j]) + bias[j]
 
             predictions[i].insert(j, 1 / (1 + (e ** -z)))
             scatter(z, 1 / (1 + (e ** -z)),
@@ -146,8 +148,14 @@ def predict():
     # ftruth = ftruth.sort_values(by=['Name', 'Category', 'Modification'])
     fdf.to_csv("categories_truth.csv", header=True, index=False)
     # df = df.sort_values(by='Category')
+    df = df.iloc[:, 2:].groupby("Category").median(numeric_only=True)
+    # print("DF")
+    df = df.reset_index()
+    # print(df)
     for i in range(len(ncategories)):
         filtered_df = df[df['Category'] == ncategories[i]]
+        # print("filtered df")
+        # print(filtered_df.values)
         percent = round(len(filtered_df) * 100 / len(df), 2)
         print(f"There are {percent}% students from test data \
 who would probably belong to {ncategories[i]}")

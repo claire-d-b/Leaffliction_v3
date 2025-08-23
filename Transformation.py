@@ -33,7 +33,7 @@ def process_file(src: str, dst: str, category: str, augmented: bool) \
         files = glob(f"{Path(pattern).parent}/Transformed/*.JPG")
         # print("files")
         # print(files)
-        print(f"{Path(pattern).parent}/Transformed/*.JPG")
+        # print(f"{Path(pattern).parent}/Transformed/*.JPG")
         plot_multiple_images_histogram(files, src, dst,
                                        ndst, category,
                                        augmented)

@@ -17,12 +17,12 @@ echo "processing train pictures' transformations...";
 ./Transformation.py Train/Train_Apple_rust &
 ./Transformation.py Train/Train_Apple_scab &
 wait
-echo "processing train pictures' augmentations...";
-./Augmentation.py Train/Train_Apple_Black_rot &
-./Augmentation.py Train/Train_Apple_healthy &
-./Augmentation.py Train/Train_Apple_rust &
-./Augmentation.py Train/Train_Apple_scab &
-wait
+# echo "processing train pictures' augmentations...";
+# ./Augmentation.py Train/Train_Apple_Black_rot &
+# ./Augmentation.py Train/Train_Apple_healthy &
+# ./Augmentation.py Train/Train_Apple_rust &
+# ./Augmentation.py Train/Train_Apple_scab &
+# wait
 
 ./train.py Transformed;
 mv features.csv dataset_test_truth.csv;
@@ -36,12 +36,12 @@ echo "processing test pictures' transformations...";
 ./Transformation.py Test/Test_Apple_rust &
 ./Transformation.py Test/Test_Apple_scab &
 wait
-echo "processing test pictures' augmentations...";
-./Augmentation.py Test/Test_Apple_Black_rot &
-./Augmentation.py Test/Test_Apple_healthy &
-./Augmentation.py Test/Test_Apple_rust &
-./Augmentation.py Test/Test_Apple_scab &
-wait
+# echo "processing test pictures' augmentations...";
+# ./Augmentation.py Test/Test_Apple_Black_rot &
+# ./Augmentation.py Test/Test_Apple_healthy &
+# ./Augmentation.py Test/Test_Apple_rust &
+# ./Augmentation.py Test/Test_Apple_scab &
+# wait
 
 if [[ $(uname -s) == "Darwin" ]]; then
     sed -i '' 's/features_Train_/features_Test_/g' train.py

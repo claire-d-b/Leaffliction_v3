@@ -65,11 +65,12 @@ def train():
         combined_df = concat(dfs, ignore_index=True)
 
         # combined_df.to_csv("features.csv", index=False)
+        # print("combiné")
         # print(combined_df)
-        combined_df = combined_df.groupby(["Subname", "Category"]).median(numeric_only=True)
+        # combined_df = combined_df.groupby(["Subname", "Category"]).median(numeric_only=True)
         # print("combd")
         # print(combined_df)
-        combined_df = combined_df.reset_index()
+        # combined_df = combined_df.reset_index()
         combined_df.to_csv("features.csv")
 
         # combined_df = concat([combined_df.iloc[:, :3],

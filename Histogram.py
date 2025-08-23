@@ -185,8 +185,8 @@ features_test.csv", mode='w')
 
         pattern = f"**/*{argv[1].rsplit('/', 1)[1]}_Transformed_\
 features_test.csv"
-        print("PATTERN")
-        print(pattern)
+        # print("PATTERN")
+        # print(pattern)
         csv_files = glob.glob(pattern, recursive=True)
         # print(files)
         # print("arg")
