@@ -23,17 +23,17 @@ def process_file(src: str, dst: str, category: str, augmented: bool) \
     # img = glob(pattern)
     # print("image")
     # print(img)
-    print("pattern")
-    print(pattern)
+    # print("pattern")
+    # print(pattern)
     true_subdir = "Histograms"
 
     ndst = f"{path.normpath(dst)}/{true_subdir}/"
 
     if not augmented:
-        files = glob(f"{Path(pattern).parent}/Base/*.JPG")
-        print("files")
-        print(files)
-        print(f"{Path(pattern).parent}/Base/*.JPG")
+        files = glob(f"{Path(pattern).parent}/Transformed/*.JPG")
+        # print("files")
+        # print(files)
+        print(f"{Path(pattern).parent}/Transformed/*.JPG")
         plot_multiple_images_histogram(files, src, dst,
                                        ndst, category,
                                        augmented)
@@ -42,9 +42,9 @@ def process_file(src: str, dst: str, category: str, augmented: bool) \
         files = glob(f"{Path(pattern).parent}/{category}/*.JPG")
         # print("haha")
         # print(f"{dst}{category}/*.JPG")
-        print("files")
-        print(files)
-        print(f"{Path(pattern).parent}/{category}/*.JPG")
+        # print("files")
+        # print(files)
+        # print(f"{Path(pattern).parent}/{category}/*.JPG")
         plot_multiple_images_histogram(files, src, dst,
                                        ndst, category,
                                        augmented)
