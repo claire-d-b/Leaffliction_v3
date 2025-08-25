@@ -125,12 +125,13 @@ def predict():
     # df = df.sort_values(by='Name')
     # Write the entire DataFrame to a CSV file
     # df.sort_values(by='Category', ascending=False)
-    first_col = df.iloc[:, [0]]
-    last_col = df.iloc[:, [1]]
+    res_df = df.sort_values(by='Subname') # groupby Name median
+    # res_df = res_df.groupby("Subname").median(numeric_only=True)
+    first_col = res_df.iloc[:, [0]]
+    last_col = res_df.iloc[:, [2]]
     res_df = concat([first_col, last_col], axis=1)
-    # print("resdf")
-    # print(res_df)
-    res_df = res_df.sort_values(by='Subname')
+    print("resdf")
+    print(res_df)
     # res_df.groupby('Subname').median(numeric_only=True)
 
     res_df.to_csv("categories.csv", header=True, index=False)
@@ -139,15 +140,20 @@ def predict():
     # ffirst_col = ftruth.iloc[:, [0]]
     # flast_col = ftruth.iloc[:, [1]]
     # fdf = concat([ffirst_col, flast_col], axis=1)
-    fdf = ftruth.sort_values(by='Subname').iloc[:, :2]
+    # fdf = ftruth.sort_values(by='Subname').iloc[:, 1:3]
+    ftruth = df.sort_values(by='Subname') # groupby Name median
+    # res_df = res_df.groupby("Subname").median(numeric_only=True)
+    first_col = ftruth.iloc[:, [0]]
+    last_col = ftruth.iloc[:, [2]]
+    ftruth = concat([first_col, last_col], axis=1)
 
     # fdf.groupby('Subname').median(numeric_only=True)
 
     # ftruth.sort_values(by='Category', ascending=False)
     # ftruth = ftruth.sort_values(by=['Name', 'Category', 'Modification'])
-    fdf.to_csv("categories_truth.csv", header=True, index=False)
+    ftruth.to_csv("categories_truth.csv", header=True, index=False)
     # df = df.sort_values(by='Category')
-    df = df.iloc[:, 2:].groupby("Category").median(numeric_only=True)
+    # df = df.iloc[:, 2:].groupby("Category").median(numeric_only=True)
     # print("DF")
     df = df.reset_index()
     # print(df)
