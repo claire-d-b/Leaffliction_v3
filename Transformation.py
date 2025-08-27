@@ -30,7 +30,7 @@ def process_file(src: str, dst: str, category: str, augmented: bool) \
     ndst = f"{path.normpath(dst)}/{true_subdir}/"
 
     if not augmented:
-        files = glob(f"{Path(pattern).parent}/Transformed/*.JPG")
+        files = glob(f"{Path(pattern).parent}/Base/*.JPG")
         # print("files")
         # print(files)
         # print(f"{Path(pattern).parent}/Transformed/*.JPG")

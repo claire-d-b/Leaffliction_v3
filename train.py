@@ -61,6 +61,7 @@ def train():
             dfs.append(df)
 
         combined_df = concat(dfs, ignore_index=True)
+        print("combined df", combined_df)
 
         combined_df.to_csv("features.csv")
 
@@ -83,7 +84,7 @@ def train():
         origin_df = load("features.csv")
         df = origin_df.fillna(0)
 
-        categories = sorted(list(set(origin_df['Category'])))
+        categories = sorted(list(set(df['Category'])))
 
         ncolors = ['red', 'blue', 'green', 'gray', 'pink',
                    'purple', 'cyan', 'lightgreen']
@@ -97,26 +98,43 @@ def train():
         # Get 3 random values without replacement
         random_markers = random.sample(nmarkers, n)
 
-        origin_df = origin_df.reset_index(drop=True)
+        origin_df = df.reset_index(drop=True)
 
-        df_name = origin_df.iloc[:, [0]]
-        df_subname = origin_df.iloc[:, [1]]
+        # df_name = origin_df.iloc[:, [0]]
+        df_subname = origin_df.iloc[:, [0]]
         # df_category = origin_df.iloc[:, [2]]
         # df_transformation = origin_df.iloc[:, [3]]
-        df_values = origin_df.iloc[:, 2:]
+        df_category = origin_df.iloc[:, [2]]
+        df_values = origin_df.iloc[:, 4:]
         # print("df vals")
         # df_values)
         df_values = normalize_df(df_values)
 
-        df = concat([df_name, df_subname], axis=1)
+        # df = concat([df_name, df_subname], axis=1)
         # df = concat([df, df_category], axis=1)
         # df = concat([df, df_transformation], axis=1)
+        df = concat([df_subname, df_category], axis=1)
         df = concat([df, df_values], axis=1)
+        print("lololo")
+        print(df)
 
         ppdf = df.copy()
+        # ppdf = ppdf.sort_values(by='Subname') # groupby Name median
+        # ppdf = ppdf.groupby(["Subname", "Category"]).median(numeric_only=True)
+        # ppdf = ppdf.reset_index()
+        # first_col = ppdf.iloc[:, [0]]
+        # last_col = ppdf.iloc[:, 2:]
+        # ppdf = concat([first_col, last_col], axis=1)
+
+        # df = df.sort_values(by='Category')
+        # df = normalize_df(df)
+        # df = df.groupby("Category", as_index=False).sum(numeric_only=True)
 
         df = df.sort_values(by='Category')
-        df = df.groupby("Category", as_index=False).median(numeric_only=True)
+        df = normalize_df(df)
+        df = df.groupby("Category", as_index=False).sum(numeric_only=True)
+        print("summed_df")
+        print(df)
 
         w = []
         b = []
@@ -125,6 +143,8 @@ def train():
         # Generate a random floating-point number between -0.01 and 0.01
         theta_0 = random.uniform(-0.0001, 0.0001)
         theta_1 = random.uniform(-0.0001, 0.0001)
+        print("kest ?")
+        print(df.iloc[:, 1:])
 
         for i in range(len(categories)):
             w.insert(i, [])
@@ -133,6 +153,9 @@ def train():
             overall_values = [float(item) for sublist in df[df
                               ['Category'] == categories[i]].iloc[:, 1:].values
                               for item in sublist]
+            print("overall")
+            print(overall_values)
+            print(categories[i])
 
             for j, item in enumerate(overall_values):
 

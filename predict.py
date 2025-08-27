@@ -34,11 +34,18 @@ def predict():
     # df_name = origin_df.iloc[:, :2]
     # df_values = origin_df.iloc[:, 2:]
 
-    df = normalize_df(df)
+    # df_values = normalize_df(df_values)
 
     # df = concat([df_name, df_values], axis=1)
 
+    print("ICI==>")
+    print(df)
+
     bias, w = open_thetas_file("thetas.csv")
+    print("bias")
+    print(bias)
+    print("w")
+    print(w)
     bias = ast.literal_eval(bias)
     # Step 1: Use ast.literal_eval to safely parse the string as a 2D list
     parsed_data = ast.literal_eval(w)
@@ -58,20 +65,25 @@ def predict():
     # df = df.groupby('Subname').median(numeric_only=True)
     # print("dataframe")
     # print(df)
+    print("here ?")
     print(df.iloc[:, 4:])
-
     for i, col in enumerate(df.iloc[:, 4:].values):
         predictions.insert(i, [])
         # print("col", col)
-
+        # z_values = []
         for j in range(len(categories)):
             z = get_dot(col, w[j]) + bias[j]
+            # z_values.append(z)
 
             predictions[i].insert(j, 1 / (1 + (e ** -z)))
             scatter(z, 1 / (1 + (e ** -z)),
                     color=random_colors[j % len(random_colors)],
                     marker='o', label=categories[j])
+        # predicted_class = z_values.index(max(z_values))
 
+        # print(predicted_class)
+        # print("zvals")
+        # print(z_values)
     # récupère tous les labels.
     handles, labels = gca().get_legend_handles_labels()
     # garde seulement un exemplaire de chaque label.
@@ -103,10 +115,33 @@ def predict():
     # Insert empty 2nd column back into the combined dataframe
     # Insert at position 1 with None values
     # df.insert(3, third_column_name, None)
-
+    print("haha")
+    print(df)
     df['Category'] = [categories[p.index(get_max(p))] for p
                       in predictions]
-    ndf = df
+    print("mdr")
+    print(df)
+    # ndf = df
+    # ndf = ndf.sort_values(by='Subname') # groupby Name median
+    ndf = df.sort_index()
+    print("newdffff")
+    print(ndf)
+
+    # # ndf = ndf.groupby(["Subname", "Category"]).median(numeric_only=True)
+    # print("haha")
+    # print(ndf.values)
+    # # ndf = ndf.sort_values(by='Subname') # groupby Name median
+
+    # ndf = ndf.groupby(["Subname", "Category"]).median(numeric_only=True)
+    # first_col = ndf.iloc[:, [0]]
+    # cats = ndf.iloc[:, [2]]
+    # vals = ndf.iloc[:, 2:]
+    # print(vals)
+    # ndf = concat([first_col, cats], axis=1)
+    # ndf = concat([ndf, vals])
+    print("iciiii")
+    print(ndf)
+
     # df = df.sort_values(by=['Name', 'Category', 'Modification'])
     # print(set(df['Category']))
     ncategories = categories
@@ -125,33 +160,56 @@ def predict():
     # df = df.sort_values(by='Name')
     # Write the entire DataFrame to a CSV file
     # df.sort_values(by='Category', ascending=False)
-    res_df = df.sort_values(by='Subname') # groupby Name median
+    print("error ?")
+    print(df)
+    # res_df = df.sort_values(by='Subname') # groupby Name median
+    # # res_df = res_df.groupby(["Subname", "Category"]).median(numeric_only=True)
+    # print("LALALLA")
+    # print(res_df)
+    # cats = res_df["Category"]
     # res_df = res_df.groupby("Subname").median(numeric_only=True)
-    first_col = res_df.iloc[:, [0]]
-    last_col = res_df.iloc[:, [2]]
-    res_df = concat([first_col, last_col], axis=1)
-    print("resdf")
-    print(res_df)
-    # res_df.groupby('Subname').median(numeric_only=True)
+    # print("SHAPE")
+    # print(res_df.shape)
+    # res_df = res_df.reset_index()
+    # print("resres")
+    # print(res_df)
+    # first_col = res_df.iloc[:, [0]]
+    # # last_col = res_df.iloc[:, [1]]
+    # res_df = concat([first_col, cats], axis=1)
 
-    res_df.to_csv("categories.csv", header=True, index=False)
-    ftruth = load("dataset_test_truth.csv")
+    # res_df.groupby('Subname').median(numeric_only=True)
+    df_pred = df.groupby("Subname").sum()
+    # df_pred = df.groupby("Subname")["Category"].agg(lambda x: x.mode().iloc[0]).reset_index()
+    df_pred.to_csv("categories.csv", index=False)
 
     # ffirst_col = ftruth.iloc[:, [0]]
     # flast_col = ftruth.iloc[:, [1]]
     # fdf = concat([ffirst_col, flast_col], axis=1)
     # fdf = ftruth.sort_values(by='Subname').iloc[:, 1:3]
-    ftruth = df.sort_values(by='Subname') # groupby Name median
-    # res_df = res_df.groupby("Subname").median(numeric_only=True)
-    first_col = ftruth.iloc[:, [0]]
-    last_col = ftruth.iloc[:, [2]]
-    ftruth = concat([first_col, last_col], axis=1)
+    # ftruth = ftruth.sort_values(by='Subname') # groupby Name median
+    # ncats = ftruth['Category']
+    # ftruth = ftruth.groupby("Subname").median(numeric_only=True)
+    # print("SHAPE")
+    # print(ftruth.shape)
+    # ftruth = ftruth.reset_index()
+    # # res_df = res_df.groupby(["Subname", "Category"]).median(numeric_only=True)
+    # first_col = ftruth.iloc[:, [0]]
 
+    # ftruth = concat([first_col, ncats], axis=1)
     # fdf.groupby('Subname').median(numeric_only=True)
+    dft_name = norigin_df['Subname']
+    dft_cat = norigin_df['Category']
+    dft_course = norigin_df.iloc[:, 4:]
 
+    dft_course = normalize_df(dft_course)
+
+    df_truth = concat([dft_name, dft_cat], axis=1)
+    df_truth = concat([df_truth, dft_course], axis=1)
     # ftruth.sort_values(by='Category', ascending=False)
     # ftruth = ftruth.sort_values(by=['Name', 'Category', 'Modification'])
-    ftruth.to_csv("categories_truth.csv", header=True, index=False)
+    # df_truth = norigin_df.groupby("Subname")["Category"].agg(lambda x: x.mode().iloc[0]).reset_index()
+    df_truth.to_csv("categories_truth.csv", index=False)
+
     # df = df.sort_values(by='Category')
     # df = df.iloc[:, 2:].groupby("Category").median(numeric_only=True)
     # print("DF")
