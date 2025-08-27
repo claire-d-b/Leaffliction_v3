@@ -12,36 +12,36 @@ rm thetas.csv;
 
 make re;
 
-echo "processing train pictures' augmentations...";
-./Augmentation.py Train/Train_Grape_Black_rot &
-./Augmentation.py Train/Train_Grape_Esca &
-./Augmentation.py Train/Train_Grape_healthy &
-./Augmentation.py Train/Train_Grape_spot &
-wait
 echo "processing train pictures' transformations...";
 ./Transformation.py Train/Train_Grape_Black_rot &
 ./Transformation.py Train/Train_Grape_Esca &
 ./Transformation.py Train/Train_Grape_healthy &
 ./Transformation.py Train/Train_Grape_spot &
 wait
+echo "processing train pictures' augmentations...";
+./Augmentation.py Train/Train_Grape_Black_rot &
+./Augmentation.py Train/Train_Grape_Esca &
+./Augmentation.py Train/Train_Grape_healthy &
+./Augmentation.py Train/Train_Grape_spot &
+wait
 
-./train.py Transformed;
+./train2.py Transformed;
 mv features.csv dataset_test_truth.csv;
 mv features_test.csv dataset_test.csv;
 mv thetas.csv thetas_old.csv;
 mv output_class_I.png output_class_I_old.png;
 
-echo "processing test pictures' augmentations...";
-./Augmentation.py Test/Test_Grape_Black_rot &
-./Augmentation.py Test/Test_Grape_Esca &
-./Augmentation.py Test/Test_Grape_healthy &
-./Augmentation.py Test/Test_Grape_spot &
-wait
 echo "processing test pictures' transformations...";
 ./Transformation.py Test/Test_Grape_Black_rot &
 ./Transformation.py Test/Test_Grape_Esca &
 ./Transformation.py Test/Test_Grape_healthy &
 ./Transformation.py Test/Test_Grape_spot &
+wait
+echo "processing test pictures' augmentations...";
+./Augmentation.py Test/Test_Grape_Black_rot &
+./Augmentation.py Test/Test_Grape_Esca &
+./Augmentation.py Test/Test_Grape_healthy &
+./Augmentation.py Test/Test_Grape_spot &
 wait
 
 if [[ $(uname -s) == "Darwin" ]]; then
@@ -49,9 +49,9 @@ if [[ $(uname -s) == "Darwin" ]]; then
 else
     sed -i 's/features_Train_/features_Test_/g' train.py
 fi;
-./train.py Transformed;
+./train2.py Transformed;
 
-./predict.py;
+./predict2.py;
 ./compare.py;
 
 if [[ $(uname -s) == "Darwin" ]]; then
