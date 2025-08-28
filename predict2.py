@@ -106,8 +106,8 @@ def predict():
             # Le résultat z représente souvent un score ou une valeur avant
             # l'application d'une fonction d'activation.
             predictions[i].insert(j, 1 / (1 + (e ** -z)))
-            # scatter(z, 1 / (1 + (e ** -z)), color=random_colors[j % len(random_colors)],
-            #         marker='o', label=classes[j])
+            scatter(z, 1 / (1 + (e ** -z)), color=random_colors[j % len(random_colors)],
+                    marker='o', label=classes[j])
 
     # récupère tous les labels.
     handles, labels = gca().get_legend_handles_labels()
