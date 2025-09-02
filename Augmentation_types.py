@@ -8,9 +8,9 @@ from numpy import float32
 from os import path
 
 
-def get_contrast(src: str, dst: str):
+def get_contrast(src: str, dst: str, script=False):
 
-    subdir = "Transformed"
+    subdir = "Augmented"
     filename = path.splitext(path.basename(src))[0]
 
     # CONTRAST / BRIGHTNESS
@@ -29,9 +29,9 @@ def get_contrast(src: str, dst: str):
     #             new_image[y,x,c] = clip(alpha*image[y,x,c] + beta, 0, 255)
 
 
-def get_scale_shrink(src: str, dst: str):
+def get_scale_shrink(src: str, dst: str, script=False):
     # SCALE
-    subdir = "Transformed"
+    subdir = "Augmented"
     filename = path.splitext(path.basename(src))[0]
     img = imread(src)
     height, width = img.shape[:2]
@@ -39,16 +39,16 @@ def get_scale_shrink(src: str, dst: str):
     imwrite(f"{dst}/{subdir}/{filename}_shrink.JPG", img_shrinked)
 
 
-def get_scale_zoom(src: str, dst: str):
-    subdir = "Transformed"
+def get_scale_zoom(src: str, dst: str, script=False):
+    subdir = "Augmented"
     filename = path.splitext(path.basename(src))[0]
     img = imread(src)
     height, width = img.shape[:2]
     img_zoomed = resize(img, (width*2, height*2), interpolation=INTER_CUBIC)
     imwrite(f"{dst}/{subdir}/{filename}_scale_zoom.JPG", img_zoomed)
 
-# def get_scale_zoom_crop(src: str, dst: str):
-#     subdir = "Transformed"
+# def get_scale_zoom_crop(src: str, dst: str, script=False):
+#     subdir = "Augmented"
 #     filename = path.splitext(path.basename(src))[0]
 #     img = imread(src)
 #     height, width = img.shape[:2]
@@ -63,8 +63,8 @@ def get_scale_zoom(src: str, dst: str):
 #     img_zoomed_cropped)
 
 
-def get_horizontal_flip(src: str, dst: str):
-    subdir = "Transformed"
+def get_horizontal_flip(src: str, dst: str, script=False):
+    subdir = "Augmented"
     # FLIP
     # Different flip operations
     # flipCode = 0: Vertical flip (top-bottom)
@@ -85,8 +85,8 @@ def get_horizontal_flip(src: str, dst: str):
             img_horizontal_flip)
 
 
-def get_rotate(src: str, dst: str):
-    subdir = "Transformed"
+def get_rotate(src: str, dst: str, script=False):
+    subdir = "Augmented"
     # ROTATE
     # getRotationMatrix2D Params:
     # center: Center of the rotation in the source image.
@@ -116,8 +116,8 @@ def get_rotate(src: str, dst: str):
     imwrite(f"{dst}/{subdir}/{filename}_rotation.JPG", img_rotated)
 
 
-def get_affine_transformation(src: str, dst: str) -> None:
-    subdir = "Transformed"
+def get_affine_transformation(src: str, dst: str, script=False) -> None:
+    subdir = "Augmented"
     filename = path.splitext(path.basename(src))[0]
     img = imread(src)
     rows, cols, ch = img.shape
@@ -131,8 +131,8 @@ def get_affine_transformation(src: str, dst: str) -> None:
     imwrite(f"{dst}/{subdir}/{filename}_affine_transformation.JPG", image)
 
 
-def get_perspective_transformation(src: str, dst: str) -> None:
-    subdir = "Transformed"
+def get_perspective_transformation(src: str, dst: str, script=False) -> None:
+    subdir = "Augmented"
     filename = path.splitext(path.basename(src))[0]
     img = imread(src)
     rows, cols, ch = img.shape

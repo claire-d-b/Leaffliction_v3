@@ -15,9 +15,7 @@ from numpy import number
 
 def predict():
     df = load("features.csv")
-    print("shape!")
-    print(df.shape)
-    print(df)
+
     ncats = df['Category']
     df = df.fillna(0)
     df_subname = df.iloc[:, [0]]
@@ -33,19 +31,15 @@ def predict():
     })
 
     df = df.reset_index()
-    print(df)
+
     classes = sorted(list(set(ncats)))
-    print("REAL")
-    print(df)
-    print(df.shape)
+
     DataFrame(df.iloc[:, :2].to_csv("categories_truth.csv", header=True, index=False))
 
     ndf = load("features_test.csv")
     ndf = ndf.fillna(0)
     ndf['Category'] = None
-    print("shape!")
-    print(ndf.shape)
-    print(ndf)
+
 
     # df_class = df['Category']
     ndf_subname = ndf.iloc[:, [0]]
@@ -57,14 +51,8 @@ def predict():
     ndf["Category"] = None
     ndf = concat([ndf, ndf_scores], axis=1)
 
-    print("hihiihi")
-    print(ndf)
-
     bias, w = open_thetas_file("thetas.csv")
-    print("bias")
-    print(bias)
-    print("w")
-    print(w)
+
     bias = ast.literal_eval(bias)
     # Step 1: Use ast.literal_eval to safely parse the string as a 2D list
     parsed_data = ast.literal_eval(w)
@@ -93,8 +81,7 @@ def predict():
 
     # Get 3 random values without replacement
     random_markers = random.sample(nmarkers, n)
-    print("et là ?")
-    print(ndf.iloc[:, 2:])
+
     figure(figsize=(8, 5))
     for i, col in enumerate(ndf.iloc[:, 2:].values):
         predictions.insert(i, [])
@@ -106,8 +93,8 @@ def predict():
             # Le résultat z représente souvent un score ou une valeur avant
             # l'application d'une fonction d'activation.
             predictions[i].insert(j, 1 / (1 + (e ** -z)))
-            scatter(z, 1 / (1 + (e ** -z)), color=random_colors[j % len(random_colors)],
-                    marker='o', label=classes[j])
+            # scatter(z, 1 / (1 + (e ** -z)), color=random_colors[j % len(random_colors)],
+            #         marker='o', label=classes[j])
 
     # récupère tous les labels.
     handles, labels = gca().get_legend_handles_labels()
@@ -134,12 +121,10 @@ def predict():
     
 
     # Write the entire DataFrame to a CSV file
-    print("on en est la")
-    print(ndf.shape)
+
     ndf['Category'] = [classes[p.index(get_max(p))] for p
                              in predictions]
-    print("after preds")
-    print(ndf.shape)
+
 
     # ndf = ndf.fillna(0)
     # ndf_subname = ndf.iloc[:, [0]]
@@ -149,8 +134,6 @@ def predict():
     # ndf = concat([ndf, ndf_values], axis=1)
     # ndf = ndf.sort_values(by='Subname')
 
-    print("hoohoh")
-    print(ndf)
     ndf = ndf.sort_values(by='Subname')
 
     ndf = ndf.groupby("Subname").agg({
@@ -159,8 +142,6 @@ def predict():
     })
     ndf = normalize_df(ndf)
 
-    print("apres df")
-    print(ndf)
     # ndf_subname = ndf.iloc[:, [0]]
     # ndf_class = ndf.iloc[:, [1]]
     # ndf_values = ndf.iloc[:, 2:]
@@ -173,11 +154,11 @@ def predict():
     # print(ndf)
     # ndf = ndf.groupby(["Subname", "Category"]).sum(numeric_only=True).reset_index()
     ndf = ndf.reset_index()
-    print("lalala")
-    print(ndf.iloc[:, :2])
+
     DataFrame(ndf.iloc[:, :2]).to_csv("categories.csv", header=True, index=False)
     
-
+    print("NDF")
+    print(ndf)
     for i in range(len(classes)):
         filtered_df = ndf[ndf['Category'] == classes[i]]
         percent = round(len(filtered_df) * 100 / len(ndf), 2)
