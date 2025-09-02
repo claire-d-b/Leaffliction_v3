@@ -157,8 +157,8 @@ def predict():
 
     DataFrame(ndf.iloc[:, :2]).to_csv("categories.csv", header=True, index=False)
     
-    print("NDF")
-    print(ndf)
+    # print("NDF")
+    # print(ndf)
     for i in range(len(classes)):
         filtered_df = ndf[ndf['Category'] == classes[i]]
         percent = round(len(filtered_df) * 100 / len(ndf), 2)

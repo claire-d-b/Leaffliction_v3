@@ -11,7 +11,7 @@ import glob
 from numpy import number
 
 def train():
-    csv_files = glob.glob("features_Train_*.csv")
+    csv_files = glob.glob("Train_*.csv")
     # print(csv_files)
     dfs = []
     for i, file in enumerate(csv_files):
@@ -55,8 +55,8 @@ def train():
 
     repr_df = repr_df.reset_index()
     repr_df = normalize_df(repr_df)
-    print(" rep df ")
-    print(repr_df)
+    # print(" rep df ")
+    # print(repr_df)
     origin_df = origin_df.fillna(0)
 
     df_class = origin_df.iloc[:, [2]]
