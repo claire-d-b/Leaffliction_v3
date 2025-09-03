@@ -26,20 +26,21 @@ def create_charts_from_dataframe(file: DataFrame, path: str) -> None:
     exists = 0
     # not file.groupby("Category").empty
     for category, group in file.groupby("Category"):
+        print(file)
         if category == path:
 
             category = group.columns
-            labels = group.index
-            count = group.values[:, 1]
+            labels = group.values[:, 0]
+            count = group.values[:, 2]
 
-            fig, ax = subplots()
+            fig, ax = subplots(figsize=(20, 16))
             ax.pie(count.astype(float), labels=labels, autopct='%1.f%%')
             savefig(f"{set(group['Category'].values).pop()}/Distribution Pie")
             ax.clear()
             fig.clf()
             close(fig)
 
-            fig, ax = subplots()
+            fig, ax = subplots(figsize=(20, 16))
             ax.bar(labels, count.astype(float), label=labels,
                    color=mcolors.TABLEAU_COLORS.values())
             ax.set_ylim(bottom=0)

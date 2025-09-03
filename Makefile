@@ -20,6 +20,18 @@ RM_DIR	= rm -rf
 
 $(NAME):
 	touch $(NAME)
+	echo -n "index" >> pictures.csv
+	@index=0; \
+	for dir in $(LIST_CATEGORIES); do \
+		if [ -d "$$dir" ]; then \
+			prefix=$$(basename "$$dir" | cut -d'.' -f1 | cut -d'_' -f1); \
+			if [ "$$prefix" != "$$(basename "$$dir")" ]; then \
+				echo -n ",$$index" >> pictures.csv; \
+				index=$$((index + 1)); \
+			fi; \
+		fi; \
+	done
+	echo "" >> pictures.csv
 	echo -n "Subcategory" >> pictures.csv
 	@for dir in $(LIST_CATEGORIES); do \
 		if [ -d "$$dir" ]; then \
