@@ -25,6 +25,7 @@ def get_hls(src: str, dst: str) -> None:
     filename = path.splitext(path.basename(src))[0]
     img = imread(src)
     img_color_hls = cvtColor(img, COLOR_BGR2HLS)
+    print("dest", f"{dst}{filename}_hls.JPG")
     imwrite(f"{dst}{filename}_hls.JPG", img_color_hls)
 
 
@@ -36,6 +37,8 @@ def get_lab(src: str, dst: str) -> None:
     # print("LAB")
     # print(f"{dst}{filename}_lab.JPG")
     # print("NAME", f"{dst}{filename}_lab.JPG")
+    print("dest0")
+    print(f"{dst}{filename}_lab.JPG")
     imwrite(f"{dst}{filename}_lab.JPG", img_color_lab)
 
 

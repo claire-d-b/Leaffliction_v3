@@ -32,7 +32,7 @@ def process_input_augmentation(src=None, dst=None, script=False) -> None:
     # print("source")
     # print("pattern")
     # print(pattern)
-    ndst = f"{Path(src).parent.parent}/Augmented/"
+    ndst = f"{src}Augmented/"
     # print(ndst)
     # print("SCRIPT")
     # print(f"{src}Transformed/*.JPG")
@@ -45,11 +45,11 @@ def process_input_augmentation(src=None, dst=None, script=False) -> None:
     # print(f"{Path(pattern).parent.parent}/Augmented/")
 
     if src and path.isfile(src):
-        if script:
-            img = process_file(src, dst=ndst, category="Augmented",
+        img = process_file(src, dst=ndst, category="Augmented",
                            augmented=True)
         # print("DSTTT")
-        # print(ndst)
+        print('sourcz')
+        print(src)
         get_contrast(src, ndst)
         get_scale_zoom(src, ndst)
         get_horizontal_flip(src, ndst)

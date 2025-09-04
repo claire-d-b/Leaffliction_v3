@@ -68,13 +68,12 @@ def process_input_transformation(src=None, dst=None, option=None, script=False) 
     # print("destination", ndst)
     # print("NDSF")
     # print(ndst)
-    # print("NDSF")
-    # print(ndst)
+    print("NDSF")
+    print(ndst)
     if src and path.isfile(src):
         # ndst = f"{path.normpath(path.dirname(src))}/Histogram_subcategory/"
 
-        if script:
-            img = process_file(src, dst=ndst, category="Transformed",
+        img = process_file(src, dst=ndst, category="Transformed",
                            augmented=False)
         # print("DSTTT")
         # print(ndst)
