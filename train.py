@@ -8,10 +8,9 @@ from seaborn import pairplot
 from sys import argv
 import random
 import glob
-from numpy import number
 
 def train():
-    csv_files = glob.glob("Train_*.csv")
+    csv_files = glob.glob("features_Train_*.csv")
     # print(csv_files)
     dfs = []
     for i, file in enumerate(csv_files):
@@ -30,7 +29,8 @@ def train():
     combined_df.to_csv("features.csv")
 
     categories = sorted(list(set(combined_df["Category"])))
-
+    print("categories")
+    print(categories)
     combined_df['Category'] = None
     combined_df.to_csv("features_test.csv")
 
@@ -47,21 +47,19 @@ def train():
     random_markers = random.sample(nmarkers, n)
 
     origin_df = load("features.csv")
-
-    repr_df = origin_df.groupby("Subname").agg({
-    'Category': lambda x: x.mode()[0] if len(x.mode()) > 0 else x.iloc[0],  # Prend la première catégorie
-    **{col: 'sum' for col in df.select_dtypes(include=[number]).columns}
-    })
-
+    repr_df = origin_df.groupby(["Subname", "Category"]).median(numeric_only=True)
     repr_df = repr_df.reset_index()
     repr_df = normalize_df(repr_df)
-    # print(" rep df ")
-    # print(repr_df)
+    print("repr df")
+    print(repr_df)
     origin_df = origin_df.fillna(0)
 
     df_class = origin_df.iloc[:, [2]]
     df_scores = origin_df.iloc[:, 4:]
-
+    print("df class")
+    print(df_class)
+    print("df score")
+    print(df_scores)
     # # Normalization
     # min_values = df_course.get_min()
     # max_values = df_course.get_max()
@@ -75,6 +73,8 @@ def train():
     df = df.sort_values(by='Category')
 
     summed_df = df.groupby("Category", as_index=False).median()
+    print("summ")
+    print(summed_df)
 
     w = []
     b = []
@@ -90,6 +90,7 @@ def train():
                           ['Category'] == categories[i]].iloc[:, 1:].values
                           for item in sublist]
         
+        print("overall scores", overall_scores)
         # print("overall scores shape", DataFrame(overall_scores).shape)
 
         for j, item in enumerate(overall_scores):
@@ -108,7 +109,9 @@ def train():
     # Write reusable thetas to a file
     f = open("thetas.csv", "w")
     thetas_1 = [[float(x) for x in row] for row in w]
-
+    print("------------")
+    print("bias", bias)
+    print("coeffs", thetas_1)
     f.write(f"theta_0: {bias}\ntheta_1: {thetas_1}")
     f.close()
 
@@ -117,9 +120,10 @@ def train():
     # categories = [i for i, x in enumerate(categories)]
 
     pairplot(repr_df, hue='Category', palette=[random_colors
-                                           [i % len(random_colors)] for
-                                           i in range(len(categories))],
-             markers=random_markers)
+                                                [i]
+                                                for i in range(len
+                                                               (categories))],
+                 markers=random_markers)
 
     savefig("output_class_I")
     # Clear the figure content

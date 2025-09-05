@@ -14,10 +14,6 @@ from Transformation_types import (get_hls, get_hsv, get_gaussian_blur,
                                   get_lab)
 from Histogram import plot_multiple_images_histogram
 from stats import get_len
-from sys import argv
-from matplotlib.pyplot import savefig, close, subplots, tight_layout, show
-from cv2 import imread, imshow, imwrite
-from pathlib import Path
 
 
 def process_file(src: str, dst: str, category: str, augmented: bool) \
@@ -31,121 +27,118 @@ def process_file(src: str, dst: str, category: str, augmented: bool) \
     # print(pattern)
     true_subdir = "Histograms"
 
-    # ndst = f"{path.normpath(dst)}/{true_subdir}/"
-    # print("this is the path")
-    # print(f"{Path(src).parent.parent}/{category}/*.JPG")
-    files = glob(f"{Path(src).parent.parent}/{category}/*.JPG")
-    # print("haha")
-    # print(f"{dst}{category}/*.JPG")
-    # print("files")
-    # print(files)
-    # print(f"{Path(pattern).parent}/{category}/*.JPG")
-    plot_multiple_images_histogram(files, src, dst,
-                                    dst, category,
-                                    augmented)
+    ndst = f"{path.normpath(dst)}/{true_subdir}/"
 
-    return files
+    if not augmented:
+        files = glob(f"{Path(pattern).parent}/Base/*.JPG")
+        # print("files")
+        # print(files)
+        # print(f"{Path(pattern).parent}/Transformed/*.JPG")
+        plot_multiple_images_histogram(files, src, dst,
+                                       ndst, category,
+                                       augmented)
+        return files
+    else:
+        files = glob(f"{Path(pattern).parent}/{category}/*.JPG")
+        # print("haha")
+        # print(f"{dst}{category}/*.JPG")
+        # print("files")
+        # print(files)
+        # print(f"{Path(pattern).parent}/{category}/*.JPG")
+        plot_multiple_images_histogram(files, src, dst,
+                                       ndst, category,
+                                       augmented)
+
+        return files
 
 
-def process_input_transformation(src=None, dst=None, option=None, script=False) -> None:
+def process_input_augmentation(src=None, dst=None, option=None) -> None:
     transformations = "lab", "hsv", "morphological_gradient", \
                       "bilateral_filter", "median_blur_small_noise", \
                       "canny_edge"
-    # if src and not src.endswith('/'):
-    #     src = src + '/'
-    # if dst and not dst.endswith('/'):
-    #     dst = src + '/'
-    # elif not dst:
-    #     dst = src
-    # else:
-    #     raise AssertionError("Please provide a path for files' transformation")
+
+    if src and not src.endswith('/'):
+        src = src + '/'
+    if dst and not dst.endswith('/'):
+        dst = src + '/'
+    elif not dst:
+        dst = src
+    else:
+        raise AssertionError("Please provide a path for files' transformation")
     img = None
-    # print("SCRIPT")
-    # print(f"{src}Transformed/*.JPG")
-    pattern = f"{Path(src).parent}/{Path(src).name}" if script == False else f"{src}Base/*.JPG"
-    ndst = f"{Path(pattern).parent.parent}/Transformed/"
-    # print("lolo", f"{Path(src).parent}/{Path(src).name}")
-    # print("destination", ndst)
-    # print("NDSF")
-    # print(ndst)
-    print("NDSF")
-    print(ndst)
     if src and path.isfile(src):
-        # ndst = f"{path.normpath(path.dirname(src))}/Histogram_subcategory/"
+        ndst = f"{path.normpath(path.dirname(src))}/Histogram_subcategory/"
 
         img = process_file(src, dst=ndst, category="Transformed",
                            augmented=False)
-        # print("DSTTT")
-        # print(ndst)
-        get_lab(src, ndst)
-        get_hsv(src, ndst)
-        get_morphological_gradient(src, ndst)
-        get_bilateral_filter(src, ndst)
-        get_median_blurring_small_noise(src, ndst)
-        get_canny_edge(src, ndst)
-        image_paths = "_lab.JPG", "_hsv.JPG", "_morphological_gradient.JPG", "_bilateral_filter.JPG", "_median_blur_small_noise.JPG", "_canny_edge.JPG"
-        complete_paths = []
-        for ipath in image_paths:
-            # print("patz")
-            # print(pattern)
-            filepath = Path(pattern).parent
-            # filepath = f"{filepath}/Transformed"
-            filename = Path(pattern).stem
-
-
-            # Get full path without extension
-            # result = full_path.with_suffix('')  # removes .JPG
-            # print("LALALA")
-            # print(f"{Path(pattern).parent.parent}/Transformed/")
-            filepath = f"{Path(pattern).parent.parent}/Transformed/"
-            complete_paths.append(f"{filepath}{filename}{ipath}")
-        # print("complete paths")
-        # print(complete_paths)
-        n_images = 6
-        n_cols = 3
-        n_rows = 2
-
-        fig_width_per_image = 3  # inches per image width
-        fig_height_per_image = 4  # inches per image height
-
-        fig, axes = subplots(n_rows, n_cols, figsize=(fig_width_per_image * n_cols, fig_height_per_image * n_rows))
-        # Flatten axes array for easy iteration
-        axes = axes.flatten()
-
-        for i, ipath in enumerate(complete_paths):
-            # print("ipath")
-            # print(f"{ndst}{Path(ipath).name}")
-            image = imread(f"{ndst}{Path(ipath).name}")
-            # print("imgg")
-            # print(f"{ndst}{Path(ipath).name}")
-            axes[i].imshow(image)
-        tight_layout()
-        # output_path = src
-        # savefig(output_path)
-        show()
+        if option:
+            for i, ttype in enumerate(transformations):
+                match option:
+                    case 0:
+                        return get_hls(src, dst)
+                    case 1:
+                        return get_hsv(src, dst)
+                    case 2:
+                        return get_gaussian_blur(src, dst)
+                    case 3:
+                        return get_bilateral_filter(src, dst)
+                    case 4:
+                        return get_median_blurring_small_noise(src, dst)
+                    case 5:
+                        return get_median_blurring_large_noise(src, dst)
+                    case _:
+                        return None
+        else:
+            get_lab(src, dst)
+            get_hsv(src, dst)
+            get_morphological_gradient(src, dst)
+            get_bilateral_filter(src, dst)
+            get_median_blurring_small_noise(src, dst)
+            get_canny_edge(src, dst)
 
     else:
         folder = src
         # Try to find multiple files using glob pattern
         # Pattern for images starting with prefix
+        pattern = f"{folder}Base/*.JPG"
         img = glob(pattern)
 
+        ndst = f"{folder}Histogram_subcategory/"
         if img:
             print(f"Found {get_len(img)} files matching pattern: {pattern}")
             # plot_multiple_images_histogram(img, src, ndst)
             for i, image in enumerate(img):
-                if script:
-                    process_file(image, dst=dst, category="Transformed",
+                process_file(image, dst=dst, category="Transformed",
                              augmented=False)
 
-                get_lab(image, ndst)
-                get_hsv(image, ndst)
-                get_morphological_gradient(image, ndst)
-                get_bilateral_filter(image, ndst)
-                get_median_blurring_small_noise(image, ndst)
-                get_canny_edge(image, ndst)
+                if option:
+                    for i, ttype in enumerate(transformations):
+                        match option:
+                            case 0:
+                                return get_morphological_gradient(image, dst)
+                            case 1:
+                                return get_sobel(image, dst)
+                            case 2:
+                                return get_canny_edge(image, dst)
+                            case 3:
+                                return get_median_blurring_large_noise(image,
+                                                                       dst)
+                            case 4:
+                                return get_median_blurring_small_noise(
+                                       image, dst)
+                            case 5:
+                                return get_laplacian_operator(image, dst)
+                            case _:
+                                return None
+                else:
+                    get_lab(image, dst)
+                    get_hsv(image, dst)
+                    get_morphological_gradient(image, dst)
+                    get_bilateral_filter(image, dst)
+                    get_median_blurring_small_noise(image, dst)
+                    get_canny_edge(image, dst)
         else:
-            print(f"No files found matching pattern: {pattern}")
+            print(f"No files found matching pattern: {src}")
 
 
 if __name__ == "__main__":
@@ -154,21 +147,40 @@ if __name__ == "__main__":
             case 1:
                 raise AssertionError("Error: Please provide at least \
                                       one argument.")
-            case 2:
-                process_input_transformation(src=argv[1])
-            case 3:
-                if argv[2] == "--script":
-                    process_input_transformation(src=f"{argv[1]}/", script=True)
+            case 2 | 3:
+                if get_len(argv) == 2 and argv[1] == "-h":
+                    print("usage: Augmentation.py [-h] [-src] \
+                           [-dst] [options]\noptional arguments:\n\
+                           -h, --help  show this help message and \
+                           exit\n -src <Input directory>\n -dst \
+                           <Destination directory if multiple files>\n\
+                           -options Type of Augmentation\n\
+                           <hls> Convert image to hue-lightness-saturation\n\
+                           <hsv> Convert image to hue-saturation-value\n\
+                                <gaussian-blur> It softens the edges and \
+                            reduces high-frequency noise in the image \
+                            by averaging pixel values\n\
+                                <median-blur-small> Removes 'salt and \
+                            pepper' small noise\n\
+                                <median-blur-large> \
+                            Removes 'salt and pepper' large noise\n\
+                                <bilateral-filter> Removes noise and \
+                            preserves edges")
+                elif get_len(argv) == 2:
+                    process_input_augmentation(src=argv[1])
+                else:
+                    if argv[1] == '-src':
+                        process_input_augmentation(src=argv[2])
             case 5:
                 if argv[1] == '-src' and argv[3] == '-dst':
-                    process_input_transformation(src=argv[2], dst=argv[4])
+                    process_input_augmentation(src=argv[2], dst=argv[4])
                 else:
                     raise AssertionError("Error: Unknown commmand: \
                                           see Augmentation.py -h (help).")
             case 7:
                 if argv[1] == '-src' and argv[3] == '-dst' and \
                    argv[5] == '-options':
-                    process_input_transformation(src=argv[2],
+                    process_input_augmentation(src=argv[2],
                                                dst=argv[4], option=argv[6])
             case _:
                 raise AssertionError("Error: Too many arguments.")

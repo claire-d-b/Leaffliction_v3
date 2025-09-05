@@ -21,55 +21,55 @@ from os import path
 
 
 def get_hls(src: str, dst: str) -> None:
+    subdir = "Transformed"
     # hue lightness saturation
     filename = path.splitext(path.basename(src))[0]
     img = imread(src)
     img_color_hls = cvtColor(img, COLOR_BGR2HLS)
-    print("dest", f"{dst}{filename}_hls.JPG")
-    imwrite(f"{dst}{filename}_hls.JPG", img_color_hls)
+    imwrite(f"{dst}/{subdir}/{filename}_hls.JPG", img_color_hls)
 
 
 def get_lab(src: str, dst: str) -> None:
+    subdir = "Transformed"
     # hue lightness saturation
     filename = path.splitext(path.basename(src))[0]
     img = imread(src)
     img_color_lab = cvtColor(img, COLOR_BGR2LAB)
-    # print("LAB")
-    # print(f"{dst}{filename}_lab.JPG")
-    # print("NAME", f"{dst}{filename}_lab.JPG")
-    print("dest0")
-    print(f"{dst}{filename}_lab.JPG")
-    imwrite(f"{dst}{filename}_lab.JPG", img_color_lab)
+    imwrite(f"{dst}/{subdir}/{filename}_lab.JPG", img_color_lab)
 
 
 def get_yuv(src: str, dst: str) -> None:
+    subdir = "Transformed"
     # hue lightness saturation
     filename = path.splitext(path.basename(src))[0]
     img = imread(src)
     img_color_yuv = cvtColor(img, COLOR_BGR2YUV)
-    imwrite(f"{dst}{filename}_yuv.JPG", img_color_yuv)
+    imwrite(f"{dst}/{subdir}/{filename}_yuv.JPG", img_color_yuv)
 
 
 def get_gray(src: str, dst: str) -> None:
+    subdir = "Transformed"
     # hue lightness saturation
     filename = path.splitext(path.basename(src))[0]
     img = imread(src)
     img_color_gray = cvtColor(img, COLOR_BGR2GRAY)
-    imwrite(f"{dst}{filename}_gray.JPG", img_color_gray)
+    imwrite(f"{dst}/{subdir}/{filename}_gray.JPG", img_color_gray)
 
 
 def get_hsv(src: str, dst: str) -> None:
     # hue saturation value
     # print("dst")
     # print(dst)
+    subdir = "Transformed"
     filename = path.splitext(path.basename(src))[0]
     img = imread(src)
     img_color_hsv = cvtColor(img, COLOR_BGR2HSV)
-    imwrite(f"{dst}{filename}_hsv.JPG", img_color_hsv)
+    imwrite(f"{dst}/{subdir}/{filename}_hsv.JPG", img_color_hsv)
 
 
 def get_gaussian_blur(src: str, dst: str) -> None:
     # GAUSSIAN BLURRING
+    subdir = "Transformed"
     filename = path.splitext(path.basename(src))[0]
     img = imread(src)
 
@@ -95,7 +95,7 @@ def get_gaussian_blur(src: str, dst: str) -> None:
     # sigmaX and sigmaY of 0 = calculated from the kernel size
     img_gaussian_blur = GaussianBlur(img, ksize, sigma)
 
-    imwrite(f"{dst}{filename}_gaussian_blur.JPG", img_gaussian_blur)
+    imwrite(f"{dst}/{subdir}/{filename}_gaussian_blur.JPG", img_gaussian_blur)
     # GaussianBlur Params:
     # src: input image; the image can have any number of channels,
     # which are processed independently,
@@ -170,8 +170,9 @@ def get_bilateral_filter(src: str, dst: str) -> None:
     img_bilateral_filter = bilateralFilter(img, nimg,
                                            sigmaColor=5*20, sigmaSpace=5*20,
                                            borderType=BORDER_CONSTANT)
+    subdir = "Transformed"
 
-    imwrite(f"{dst}{filename}_bilateral_filter.JPG",
+    imwrite(f"{dst}/{subdir}/{filename}_bilateral_filter.JPG",
             img_bilateral_filter)
     # Used for denoising!
     # See, the texture on the surface is gone, but the edges are
@@ -191,34 +192,38 @@ def get_median_blurring_small_noise(src: str, dst: str) -> None:
     # image processing operations.
     # 3 vs 5 - 3 looks at broader neighborhood, remove larger noise patterns
     # Removes salt and pepper effect - small noise
+    subdir = "Transformed"
     filename = path.splitext(path.basename(src))[0]
     img = imread(src)
     img_median_blur_small = medianBlur(img, 3)
-    imwrite(f"{dst}{filename}_median_blur_small_noise.JPG",
+    imwrite(f"{dst}/{subdir}/{filename}_median_blur_small_noise.JPG",
             img_median_blur_small)
 
 
 def get_median_blurring_large_noise(src: str, dst: str) -> None:
     # Remove salt and paper effect - large noise
+    subdir = "Transformed"
     filename = path.splitext(path.basename(src))[0]
     img = imread(src)
     img_median_blur_large = medianBlur(img, 5)
-    imwrite(f"{dst}{filename}_median_blur_large_noise.JPG",
+    imwrite(f"{dst}/{subdir}/{filename}_median_blur_large_noise.JPG",
             img_median_blur_large)
 
 
 def get_morphological_gradient(src: str, dst: str) -> None:
+    subdir = "Transformed"
     filename = path.splitext(path.basename(src))[0]
     img = imread(src)
 
     kernel = ones((3, 3), uint8)
     img_morphological_gradient = morphologyEx(img, MORPH_GRADIENT, kernel)
 
-    imwrite(f"{dst}{filename}_morphological_gradient.JPG",
+    imwrite(f"{dst}/{subdir}/{filename}_morphological_gradient.JPG",
             img_morphological_gradient)
 
 
 def get_sobel(src: str, dst: str) -> None:
+    subdir = "Transformed"
     filename = path.splitext(path.basename(src))[0]
     img = imread(src)
     scale = 1
@@ -238,11 +243,12 @@ def get_sobel(src: str, dst: str) -> None:
     abs_grad_y = convertScaleAbs(grad_y)
 
     img_sobel = addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0)
-    imwrite(f"{dst}{filename}_sobel.JPG",
+    imwrite(f"{dst}/{subdir}/{filename}_sobel.JPG",
             img_sobel)
 
 
 def get_laplacian_operator(src: str, dst: str) -> None:
+    subdir = "Transformed"
     filename = path.splitext(path.basename(src))[0]
     img = imread(src)
 
@@ -256,11 +262,12 @@ def get_laplacian_operator(src: str, dst: str) -> None:
     img_laplacian = Laplacian(src_gray, ddepth, ksize=kernel_size)
     # Convert CV_16S to CV_8U for saving
     img_laplacian_operator_8u = convertScaleAbs(img_laplacian)
-    imwrite(f"{dst}{filename}_laplacian_operator.JPG",
+    imwrite(f"{dst}/{subdir}/{filename}_laplacian_operator.JPG",
             img_laplacian_operator_8u)
 
 
 def get_canny_edge(src: str, dst: str) -> None:
+    subdir = "Transformed"
     filename = path.splitext(path.basename(src))[0]
     img = imread(src)
 
@@ -273,5 +280,5 @@ def get_canny_edge(src: str, dst: str) -> None:
                            kernel_size)
     mask = detected_edges != 0
     img_canny_edge = img * (mask[:, :, None].astype(img.dtype))
-    imwrite(f"{dst}{filename}_canny_edge.JPG",
+    imwrite(f"{dst}/{subdir}/{filename}_canny_edge.JPG",
             img_canny_edge)

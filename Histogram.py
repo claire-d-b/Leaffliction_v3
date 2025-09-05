@@ -43,7 +43,7 @@ def calculate_histogram_stats(values):
 def plot_multiple_images_histogram(image_files, src, dst, ndst, category,
                                    augmented):
     """Plot averaged histograms for multiple images"""
-    fig, ax = subplots()
+    fig, axs = subplots()
 
     # Initialize histogram accumulators
     (r_hist_sum, g_hist_sum, b_hist_sum, l_hist_sum, h_hist_sum, s_hist_sum,
@@ -53,8 +53,6 @@ def plot_multiple_images_histogram(image_files, src, dst, ndst, category,
 
     for file in image_files:
         img = imread(file)
-        # print("imageee")
-        # print(file)
 
         if img is None:
             # print(f"Warning: Could not read image {file} because \
@@ -116,161 +114,154 @@ def plot_multiple_images_histogram(image_files, src, dst, ndst, category,
             s_hist_sum += s_hist
             v_hist_sum += v_hist
 
-    if valid_images != 0:
+    if valid_images == 0:
+        return
 
-        # Average the histograms
-        r_hist_avg = r_hist_sum / valid_images
-        g_hist_avg = g_hist_sum / valid_images
-        b_hist_avg = b_hist_sum / valid_images
+    # Average the histograms
+    r_hist_avg = r_hist_sum / valid_images
+    g_hist_avg = g_hist_sum / valid_images
+    b_hist_avg = b_hist_sum / valid_images
 
-        A_hist_avg = A_hist_sum / valid_images
-        B_hist_avg = B_hist_sum / valid_images
+    A_hist_avg = A_hist_sum / valid_images
+    B_hist_avg = B_hist_sum / valid_images
 
-        l_hist_avg = l_hist_sum / valid_images
-        h_hist_avg = h_hist_sum / valid_images
-        s_hist_avg = s_hist_sum / valid_images
-        v_hist_avg = v_hist_sum / valid_images
+    l_hist_avg = l_hist_sum / valid_images
+    h_hist_avg = h_hist_sum / valid_images
+    s_hist_avg = s_hist_sum / valid_images
+    v_hist_avg = v_hist_sum / valid_images
 
-        if category == "Transformed" or category == "Augmented":
-            nsrc = path.basename(src)
-            dst = f"{dst}{category}/"
+    if category == "Transformed" or category == "Augmented":
+        nsrc = path.basename(src)
+        dst = f"{dst}{category}/"
 
-            modifications = ("lab", "hsv", "morphological_gradient",
-                            "bilateral_filter", "median_blur_small_noise",
-                            "canny_edge") if category == "Transformed" else \
-                            ("contrast", "scale_zoom",
-                            "horizontal_flip", "rotation",
-                            "affine_transformation",
-                            "perspective_transformation")
+        modifications = ("lab", "hsv", "morphological_gradient",
+                         "bilateral_filter", "median_blur_small_noise",
+                         "canny_edge") if not augmented else \
+                        ("contrast", "scale_zoom",
+                         "horizontal_flip", "rotation",
+                         "affine_transformation",
+                         "perspective_transformation")
 
-            for m in modifications:
-                dstname = f"{Path(src).parent.parent}/{path.splitext(path.basename(src))[0]}_{m}.JPG"
-                # print("dstname")
-                # print(dstname)
-                dictionary = dict({
-                                "Subname": f"{Path(dstname).name.split('_')[0]}_\
+        for m in modifications:
+            dstname = f"{dst}{path.splitext(path.basename(nsrc))[0]}_{m}"
+            dictionary = dict({
+                            "Subname": f"{Path(dstname).name.split('_')[0]}_\
 {Path(dstname).parts[1]}",
-                                "Name": f"{Path(dstname).name.split('_')[0]}_\
+                            "Name": f"{Path(dstname).name.split('_')[0]}_\
 {Path(dstname).parts[1]}_{'_'.join(Path(dstname).name.split('_')[1:])}",
-                                "Category": f"{Path(dstname).parts[1]}",
-                                "Modification": f"{'_'.join(Path(dstname)
-                                                            .name.split('_')
-                                                            [1:])}",
-                                "Red": r_hist_avg.flatten(),
-                                "Green": g_hist_avg.flatten(),
-                                "Blue": b_hist_avg.flatten(),
-                                "Blue_Yellow": A_hist_avg.flatten(),
-                                "Green_Magenta": B_hist_avg.flatten(),
-                                "Lightness": l_hist_avg.flatten(),
-                                "Hue": h_hist_avg.flatten(),
-                                "Saturation": s_hist_avg.flatten(),
-                                "Value": v_hist_avg.flatten()})
-                ndf = DataFrame(dictionary)
-                # ndf = normalize_df(ndf)
+                            "Category": f"{Path(dstname).parts[1]}",
+                            "Modification": f"{'_'.join(Path(dstname)
+                                                        .name.split('_')
+                                                        [1:])}",
+                            "Red": r_hist_avg.flatten(),
+                            "Green": g_hist_avg.flatten(),
+                            "Blue": b_hist_avg.flatten(),
+                            "Blue_Yellow": A_hist_avg.flatten(),
+                            "Green_Magenta": B_hist_avg.flatten(),
+                            "Lightness": l_hist_avg.flatten(),
+                            "Hue": h_hist_avg.flatten(),
+                            "Saturation": s_hist_avg.flatten(),
+                            "Value": v_hist_avg.flatten()})
+            ndf = DataFrame(dictionary)
+            # ndf = normalize_df(ndf)
 
-                ndst = Path(dst).parent
-#                 print("PAATTTTH")
-#                 print(f'{Path(dstname).parent}/{Path(dstname).parts[1]}_\
-# features.csv')
+            ndst = Path(dst).parent
 
-                if path.exists(f'{Path(dstname).parent}/{Path(dstname).parts[1]}_\
-features.csv'):
-                    ndf.to_csv(f'{Path(dstname).parent}/{Path(dstname).parts[1]}_\
-features.csv', mode='a', header=False)
-                else:
-                    ndf.to_csv(f'{Path(dstname).parent}/{Path(dstname).parts[1]}_\
-features.csv', mode='w', index=True)
+            if path.exists(f'{dst}{Path(dstname).parts[1]}_\
+{category}_features.csv'):
+                ndf.to_csv(f'{dst}{Path(dstname).parts[1]}_\
+{category}_features.csv', mode='a', header=False)
+            else:
+                ndf.to_csv(f'{dst}{Path(dstname).parts[1]}_\
+{category}_features.csv', mode='w', index=True)
 
-                newdf = load(f"{Path(dstname).parent}/{Path(dstname).parts[1]}_\
-features.csv")
-                nndf = newdf.groupby(['Subname', 'Name', 'Category',
-                                    'Modification']).median(numeric_only=True)
-                # nndf = normalize_df(nndf)
-                nndf.to_csv(f"{Path(dstname).parts[1]}_\
-features.csv", mode='w')
+            newdf = load(f"{dst}{Path(dstname).parts[1]}_\
+{category}_features.csv")
+            nndf = newdf.groupby(['Subname', 'Name', 'Category',
+                                  'Modification']).median(numeric_only=True)
+            # nndf = normalize_df(nndf)
+            nndf.to_csv(f"{dst}{Path(dstname).parts[1]}_{category}_\
+features_test.csv", mode='w')
 
-            pattern = f"{argv[1]}/*.csv"
-            # print("hehehhe")
-            # print(pattern)
-            # print("PATTERN")
-            # print(pattern)
-            csv_files = glob.glob(pattern, recursive=True)
-            # print(files)
-            # print("arg")
-            # print(argv[1])
-            # print(f"./*/*/*_{argv[1]}_features_test.csv")
-            # csv_files = list(Path("./").glob(f"*_{argv[1]}_features_test.csv"))
+        pattern = f"**/*{argv[1].rsplit('/', 1)[1]}_Transformed_\
+features_test.csv"
+        # print("PATTERN")
+        # print(pattern)
+        csv_files = glob.glob(pattern, recursive=True)
+        # print(files)
+        # print("arg")
+        # print(argv[1])
+        # print(f"./*/*/*_{argv[1]}_features_test.csv")
+        # csv_files = list(Path("./").glob(f"*_{argv[1]}_features_test.csv"))
 
-            # Combine files
-            # Combine files with only one header
-            dfs = []
-            for i, file in enumerate(csv_files):
-                # print(file)
-
-                if i == 0:
-                    # First file: keep header
-                    df = read_csv(file)
-                else:
-                    # Subsequent files: skip header (first row)
-                    df = read_csv(file, skiprows=1, header=None)
-                    # Use column names from the first dataframe
-                    df.columns = dfs[0].columns
-
-                dfs.append(df)
-            # print("DFS")
-            # print(dfs)
-            combined_df = concat(dfs, ignore_index=True)
-            # original_df = read_csv(csv_files[0])  # Get column structure
-            # from first file
-            # Get 2nd column name:
-            # second_column_name = original_df.columns[1]
-            test_df = combined_df.copy()
-            # test_df = normalize_df(test_df)
-            file = Path(f"{Path(dstname).parts[1]}")
-            # print("FILE")
+        # Combine files
+        # Combine files with only one header
+        dfs = []
+        for i, file in enumerate(csv_files):
             # print(file)
 
-#             if file.exists():
-#                 test_df.to_csv(f"{Path(dstname).parent}/{Path(dstname).parts[1]}_features\
-# .csv", mode="a", header=False)
-#                 # test_df['Category'] = None
-#                 test_df.to_csv(f"{Path(dstname).parent}/{Path(dstname).parts[1]}_features\
-# .csv", mode="a", header=False, index=False)
-#             else:
-#                 test_df.to_csv(f"{Path(dstname).parent}/{Path(dstname).parts[1]}_features\
-# .csv", mode="w", header=True)
-#                 # test_df['Category'] = None
-#                 test_df.to_csv(f"{Path(dstname).parent}/{Path(dstname).parts[1]}_features\
-# .csv", mode="w", header=True, index=False)
-            # Insert empty 2nd column back into the combined dataframe
-            # Insert at position 1 with None values
-            # combined_df.insert(1, second_column_name, None)
-            # test_df.to_csv("features_test.csv", mode="a", index=False)
+            if i == 0:
+                # First file: keep header
+                df = read_csv(file)
+            else:
+                # Subsequent files: skip header (first row)
+                df = read_csv(file, skiprows=1, header=None)
+                # Use column names from the first dataframe
+                df.columns = dfs[0].columns
 
-        # Plot averaged histograms
-        ax.plot(b_hist_avg, color='b', label='Blue')
-        ax.plot(A_hist_avg, color='yellow', label='Blue-Yellow')
-        ax.plot(g_hist_avg, color='g', label='Green')
-        ax.plot(B_hist_avg, color='fuchsia', label='Green-magenta')
-        ax.plot(h_hist_avg, color='purple', label='Hue')
-        ax.plot(l_hist_avg, color='gray', label='Lightness')
-        ax.plot(r_hist_avg, color='r', label='Red')
-        ax.plot(s_hist_avg, color='cyan', label='Saturation')
-        ax.plot(v_hist_avg, color='orange', label='Value')
+            dfs.append(df)
+        # print("DFS")
+        # print(dfs)
+        combined_df = concat(dfs, ignore_index=True)
+        # original_df = read_csv(csv_files[0])  # Get column structure
+        # from first file
+        # Get 2nd column name:
+        # second_column_name = original_df.columns[1]
+        test_df = combined_df.copy()
+        # test_df = normalize_df(test_df)
+        file = Path(f"{Path(dstname).parts[1]}")
 
-        title(f'Average Color Histogram - {valid_images} Images')
-        xlabel('Pixel Intensity')
-        ylabel('Average Proportion of pixels')
-        ylim(0, 10)
+        if file.exists():
+            test_df.to_csv(f"features_{Path(dstname).parts[1]}\
+.csv", mode="a", header=False)
+            # test_df['Category'] = None
+            test_df.to_csv(f"features_{Path(dstname).parts[1]}_test\
+.csv", mode="a", header=False, index=False)
+        else:
+            test_df.to_csv(f"features_{Path(dstname).parts[1]}\
+.csv", mode="w", header=True)
+            # test_df['Category'] = None
+            test_df.to_csv(f"features_{Path(dstname).parts[1]}\
+.csv", mode="w", header=True, index=False)
+        # Insert empty 2nd column back into the combined dataframe
+        # Insert at position 1 with None values
+        # combined_df.insert(1, second_column_name, None)
+        # test_df.to_csv("features_test.csv", mode="a", index=False)
 
-        handles, labels = ax.get_legend_handles_labels()
-        unique = dict(zip(labels, handles))
-        legend(unique.values(), unique.keys())
+    # Plot averaged histograms
+    axs.plot(b_hist_avg, color='b', label='Blue')
+    axs.plot(A_hist_avg, color='yellow', label='Blue-Yellow')
+    axs.plot(g_hist_avg, color='g', label='Green')
+    axs.plot(B_hist_avg, color='fuchsia', label='Green-magenta')
+    axs.plot(h_hist_avg, color='purple', label='Hue')
+    axs.plot(l_hist_avg, color='gray', label='Lightness')
+    axs.plot(r_hist_avg, color='r', label='Red')
+    axs.plot(s_hist_avg, color='cyan', label='Saturation')
+    axs.plot(v_hist_avg, color='orange', label='Value')
 
-        # source = path.splitext(path.basename(src))[0]
-        output_path = f"{Path(dstname).parent}/{Path(dstname).parts[1]}_color_histogram_multiple.png"
-        savefig(output_path)
+    title(f'Average Color Histogram - {valid_images} Images')
+    xlabel('Pixel Intensity')
+    ylabel('Average Proportion of pixels')
+    ylim(0, 10)
 
-    ax.clear()
+    handles, labels = axs.get_legend_handles_labels()
+    unique = dict(zip(labels, handles))
+    legend(unique.values(), unique.keys())
+
+    # source = path.splitext(path.basename(src))[0]
+    output_path = f"{ndst}_color_histogram_multiple.png"
+    savefig(output_path)
+
+    axs.clear()
     fig.clf()
     close(fig)
