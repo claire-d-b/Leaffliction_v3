@@ -9,6 +9,9 @@ from Augmentation_types import (get_contrast, get_scale_zoom,
                                 get_affine_transformation)
 from Transformation import process_file
 from stats import get_len
+from matplotlib.pyplot import savefig, close, subplots, tight_layout, show
+from cv2 import imread, imshow, imwrite
+from pathlib import Path
 
 
 def process_input_augmentation(src=None, dst=None, option=None) -> None:
@@ -54,6 +57,47 @@ def process_input_augmentation(src=None, dst=None, option=None) -> None:
             get_rotate(src, dst)
             get_affine_transformation(src, dst)
             get_perspective_transformation(src, dst)
+        image_paths = "_contrast.JPG", "_scale_zoom.JPG", "_horizontal_flip.JPG", "_rotation.JPG", "_affine_transformation.JPG", "_perspective_transformation.JPG"
+        complete_paths = []
+        for ipath in image_paths:
+            # print("patz")
+            # print(pattern)
+            filepath = Path(pattern).parent
+            # filepath = f"{filepath}/Transformed"
+            filename = Path(pattern).stem
+
+
+            # Get full path without extension
+            # result = full_path.with_suffix('')  # removes .JPG
+            # print("LALALA")
+            # print(f"{Path(pattern).parent.parent}/Augmented/")
+            filepath = f"{Path(pattern).parent.parent}/Augmented/"
+            complete_paths.append(f"{filepath}{filename}{ipath}")
+        # print("complete paths")
+        # print(complete_paths)
+        n_images = 6
+        n_cols = 3
+        n_rows = 2
+
+        fig_width_per_image = 3  # inches per image width
+        fig_height_per_image = 4  # inches per image height
+
+        fig, axes = subplots(n_rows, n_cols, figsize=(fig_width_per_image * n_cols, fig_height_per_image * n_rows))
+        # Flatten axes array for easy iteration
+        axes = axes.flatten()
+
+        for i, ipath in enumerate(complete_paths):
+            # print("ipath")
+            # print(f"{ndst}{Path(ipath).name}")
+            image = imread(f"{ndst}{Path(ipath).name}")
+            # print("imgg")
+            # print(f"{ndst}{Path(ipath).name}")
+            axes[i].imshow(image)
+        tight_layout()
+        # output_path = src
+        # savefig(output_path)
+        show()
+
 
     else:
         folder = src

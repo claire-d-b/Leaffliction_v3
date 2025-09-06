@@ -14,6 +14,10 @@ from Transformation_types import (get_hls, get_hsv, get_gaussian_blur,
                                   get_lab)
 from Histogram import plot_multiple_images_histogram
 from stats import get_len
+from sys import argv
+from matplotlib.pyplot import savefig, close, subplots, tight_layout, show
+from cv2 import imread, imshow, imwrite
+from pathlib import Path
 
 
 def process_file(src: str, dst: str, category: str, augmented: bool) \
@@ -95,7 +99,46 @@ def process_input_augmentation(src=None, dst=None, option=None) -> None:
             get_bilateral_filter(src, dst)
             get_median_blurring_small_noise(src, dst)
             get_canny_edge(src, dst)
+        image_paths = "_lab.JPG", "_hsv.JPG", "_morphological_gradient.JPG", "_bilateral_filter.JPG", "_median_blur_small_noise.JPG", "_canny_edge.JPG"
+        complete_paths = []
+        for ipath in image_paths:
+            # print("patz")
+            # print(pattern)
+            filepath = Path(pattern).parent
+            # filepath = f"{filepath}/Transformed"
+            filename = Path(pattern).stem
 
+
+            # Get full path without extension
+            # result = full_path.with_suffix('')  # removes .JPG
+            # print("LALALA")
+            # print(f"{Path(pattern).parent.parent}/Transformed/")
+            filepath = f"{Path(pattern).parent.parent}/Transformed/"
+            complete_paths.append(f"{filepath}{filename}{ipath}")
+        # print("complete paths")
+        # print(complete_paths)
+        n_images = 6
+        n_cols = 3
+        n_rows = 2
+
+        fig_width_per_image = 3  # inches per image width
+        fig_height_per_image = 4  # inches per image height
+
+        fig, axes = subplots(n_rows, n_cols, figsize=(fig_width_per_image * n_cols, fig_height_per_image * n_rows))
+        # Flatten axes array for easy iteration
+        axes = axes.flatten()
+
+        for i, ipath in enumerate(complete_paths):
+            # print("ipath")
+            # print(f"{ndst}{Path(ipath).name}")
+            image = imread(f"{ndst}{Path(ipath).name}")
+            # print("imgg")
+            # print(f"{ndst}{Path(ipath).name}")
+            axes[i].imshow(image)
+        tight_layout()
+        # output_path = src
+        # savefig(output_path)
+        show()
     else:
         folder = src
         # Try to find multiple files using glob pattern

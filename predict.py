@@ -151,6 +151,7 @@ def predict():
 
     print("hoohoh")
     print(ndf)
+    showed_df = normalize_df(ndf)
     ndf = ndf.sort_values(by='Subname')
 
     ndf = ndf.groupby("Subname").agg({
@@ -184,7 +185,7 @@ def predict():
         print(f"There are {percent}% students from test data \
 who would probably belong to {classes[i]}")
 
-    pairplot(ndf, hue="Category", palette=[random_colors
+    pairplot(showed_df, hue="Category", palette=[random_colors
                                            [i % len(random_colors)] for
                                            i in range(len(classes))],
              markers=random_markers)

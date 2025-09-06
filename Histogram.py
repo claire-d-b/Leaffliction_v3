@@ -166,25 +166,26 @@ def plot_multiple_images_histogram(image_files, src, dst, ndst, category,
             # ndf = normalize_df(ndf)
 
             ndst = Path(dst).parent
-
-            if path.exists(f'{dst}{Path(dstname).parts[1]}_\
-{category}_features.csv'):
-                ndf.to_csv(f'{dst}{Path(dstname).parts[1]}_\
-{category}_features.csv', mode='a', header=False)
+            # print("first path")
+            # print(f'{Path(dst).parent}/{Path(dstname).parts[1]}_features.csv')
+            # print("second path")
+            # print(f"{Path(dst).parent}/{Path(dstname).parts[1]}_features.csv")
+            if path.exists(f'{Path(dst).parent}/{Path(dstname).parts[1]}_features.csv'):
+                ndf.to_csv(f'{Path(dst).parent}/{Path(dstname).parts[1]}_features.csv', mode='a', header=False)
             else:
-                ndf.to_csv(f'{dst}{Path(dstname).parts[1]}_\
-{category}_features.csv', mode='w', index=True)
+                ndf.to_csv(f'{Path(dst).parent}/{Path(dstname).parts[1]}_features.csv', mode='w', index=True)
 
-            newdf = load(f"{dst}{Path(dstname).parts[1]}_\
-{category}_features.csv")
+            newdf = load(f"{Path(dst).parent}/{Path(dstname).parts[1]}_features.csv")
             nndf = newdf.groupby(['Subname', 'Name', 'Category',
-                                  'Modification']).median(numeric_only=True)
+                                  'Modification']).sum(numeric_only=True)
+            nndf = normalize_df(nndf)
             # nndf = normalize_df(nndf)
-            nndf.to_csv(f"{dst}{Path(dstname).parts[1]}_{category}_\
-features_test.csv", mode='w')
-
-        pattern = f"**/*{argv[1].rsplit('/', 1)[1]}_Transformed_\
-features_test.csv"
+            # print("whhhhhhat ?")
+            # print(f"{Path(dst).parent}/{argv[1].rsplit('/', 1)[1]}_features_test.csv")
+            nndf.to_csv(f"{Path(dst).parent}/{argv[1].rsplit('/', 1)[1]}_features_test.csv", mode='w')
+        # print("patternnnn")
+        # print(f"**/*{Path(dst).parent}/{argv[1].rsplit('/', 1)[1]}_features_test.csv")
+        pattern = f"**/*{Path(dst).parent}/{argv[1].rsplit('/', 1)[1]}_features_test.csv"
         # print("PATTERN")
         # print(pattern)
         csv_files = glob.glob(pattern, recursive=True)
