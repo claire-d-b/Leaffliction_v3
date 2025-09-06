@@ -8,7 +8,6 @@ from seaborn import pairplot
 from sys import argv
 import random
 import glob
-from numpy import number
 
 def train():
     csv_files = glob.glob("features_Train_*.csv")
@@ -29,18 +28,10 @@ def train():
     combined_df = concat(dfs, ignore_index=True)
     combined_df.to_csv("features.csv")
 
-    print("comb df")
-    print(combined_df)
-    showed_df = combined_df.copy()
-
     categories = sorted(list(set(combined_df["Category"])))
     print("categories")
     print(categories)
-    # showed_df = normalize_df(combined_df)
-    # print(showed_df)
-
-    test_combined_df = combined_df.copy()
-    test_combined_df['Category'] = None
+    combined_df['Category'] = None
     combined_df.to_csv("features_test.csv")
 
     ncolors = ['red', 'blue', 'green', 'gray', 'pink',
@@ -55,17 +46,16 @@ def train():
     # Get 3 random values without replacement
     random_markers = random.sample(nmarkers, n)
 
-    # combined_df = combined_df.groupby("Subname").agg({
-    # 'Category': lambda x: x.mode()[0] if len(x.mode()) > 0 else x.iloc[0],  # Prend la première catégorie
-    # **{col: 'sum' for col in df.select_dtypes(include=[number]).columns}
-    # })
-    combined_df = load("features.csv")  # Or use the original one
-    combined_df = normalize_df(combined_df)
-    print("hehehe")
-    print(combined_df['Category'])
+    origin_df = load("features.csv")
+    repr_df = origin_df.groupby(["Subname", "Category"]).median(numeric_only=True)
+    repr_df = repr_df.reset_index()
+    repr_df = normalize_df(repr_df)
+    print("repr df")
+    print(repr_df)
+    origin_df = origin_df.fillna(0)
 
-    df_class = combined_df.iloc[:, 1]
-    df_scores = combined_df.iloc[:, 2:]
+    df_class = origin_df.iloc[:, [2]]
+    df_scores = origin_df.iloc[:, 4:]
     print("df class")
     print(df_class)
     print("df score")
@@ -82,16 +72,15 @@ def train():
 
     df = df.sort_values(by='Category')
 
-    summed_df = df.groupby("Category", as_index=False).sum()
-    summed_df = normalize_df(summed_df)
+    summed_df = df.groupby("Category", as_index=False).median()
     print("summ")
     print(summed_df)
 
     w = []
     b = []
     # Generate a random floating-point number between -0.01 and 0.01
-    theta_0 = random.uniform(-0.0001, 0.0001)
-    theta_1 = random.uniform(-0.0001, 0.0001)
+    theta_0 = random.uniform(-0.01, 0.01)
+    theta_1 = random.uniform(-0.01, 0.01)
     for i in range(len(categories)):
         w.insert(i, [])
         b.insert(i, [])
@@ -108,7 +97,7 @@ def train():
             # print("i:", i)
             weight, bias, mse = minimize_cost(len(overall_scores),
                                               theta_0, theta_1,
-                                              item, 1, 0.0001)
+                                              item, 1, 0.00001)
             w[i].insert(j, weight)
             b[i].insert(j, bias)
 
@@ -129,13 +118,12 @@ def train():
     # colors = {0: "red", 1: "yellow", 2: "blue", 3: "green"}
     # index of category (0 to 3)
     # categories = [i for i, x in enumerate(categories)]
-    # print("representation")
-    # print(repr_df)
-    # repr_df = repr_df.groupby(["Subname", "Name"]).median(numeric_only=True)
-    nnndf = load("features.csv")
-    pairplot(nnndf, hue='Category', 
-         palette=[random_colors[i] for i in range(len(categories))],
-         markers=random_markers)
+
+    pairplot(repr_df, hue='Category', palette=[random_colors
+                                                [i]
+                                                for i in range(len
+                                                               (categories))],
+                 markers=random_markers)
 
     savefig("output_class_I")
     # Clear the figure content

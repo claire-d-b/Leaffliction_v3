@@ -25,7 +25,7 @@ echo "processing train pictures' augmentations...";
 ./Augmentation.py Train/Train_Grape_spot &
 wait
 
-./train3.py;
+./train.py Transformed;
 mv features.csv dataset_test_truth.csv;
 mv features_test.csv dataset_test.csv;
 mv thetas.csv thetas_old.csv;
@@ -49,7 +49,7 @@ if [[ $(uname -s) == "Darwin" ]]; then
 else
     sed -i 's/features_Train_/features_Test_/g' train.py
 fi;
-./train3.py;
+./train.py Transformed;
 
 ./predict.py;
 ./compare.py;
